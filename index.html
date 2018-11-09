@@ -4,13 +4,15 @@
         <meta charset="UTF-8">
         <title>Preprocessor</title>
         <link href="style.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="preprocessor.js"></script>
     </head>
     <body>
         <div class="main">
             <canvas id="canvas" width="600" height="500"></canvas>
             <div class="controls">
-                <input id="input" type="text">
-                <button id="updateButton">Update</button>
+                <textarea id="input"></textarea>
+                <button id="updateButton" onclick="update();">Update</button>
             </div>
         </div>
     </body>
