@@ -4,7 +4,7 @@ let defaultInput =
 3 2
 
 0 0 0 0 0
-0.5 0 1 1 1
+0.5 0.1 1 1 1
 1 0 0 0 0
 
 0 1
@@ -14,7 +14,7 @@ let defaultInput =
 
 let constructionPercentage = 0.7
 let nodeSize = 5
-let rodWidth = 10
+let rodWidth = 20
 
 let canvas = null
 let ctx = null
@@ -88,18 +88,54 @@ getNodeCanvasCoords = (construction, node) =>
     return { x: x, y: y }
 }
 
+drawNode = (construction, node) =>
+{
+    let coords = getNodeCanvasCoords(construction, node)
+    ctx.fillRect(coords.x - nodeSize / 2, coords.y - nodeSize / 2, nodeSize, nodeSize)
+}
+
+drawRod = (construction, rod) =>
+{
+    let start = getNodeCanvasCoords(construction, construction.nodes[rod.startNode])
+    let end = getNodeCanvasCoords(construction, construction.nodes[rod.endNode])
+
+    let vx = start.x - end.x
+    let vy = start.y - end.y
+    let angle = Math.atan2(vy, vx)
+
+    let x0 = start.x + Math.cos(angle + Math.PI / 2) * rodWidth / 2
+    let y0 = start.y + Math.sin(angle + Math.PI / 2) * rodWidth / 2
+
+    let x1 = start.x + Math.cos(angle - Math.PI / 2) * rodWidth / 2
+    let y1 = start.y + Math.sin(angle - Math.PI / 2) * rodWidth / 2
+
+    let x2 = end.x + Math.cos(angle - Math.PI / 2) * rodWidth / 2
+    let y2 = end.y + Math.sin(angle - Math.PI / 2) * rodWidth / 2
+
+    let x3 = end.x + Math.cos(angle + Math.PI / 2) * rodWidth / 2
+    let y3 = end.y + Math.sin(angle + Math.PI / 2) * rodWidth / 2
+
+    ctx.beginPath()
+    ctx.moveTo(x0, y0)
+    ctx.lineTo(x1, y1)
+    ctx.lineTo(x2, y2)
+    ctx.lineTo(x3, y3)
+    ctx.lineTo(x0, y0)
+    ctx.stroke()
+}
+
 drawConstruction = (construction) =>
 {
     ctx.fillStyle = "#ffffff"
+    ctx.strokeStyle = "#ffffff"
 
-    construction.nodes.forEach(node => {
-        let coords = getNodeCanvasCoords(construction, node)
-        ctx.fillRect(coords.x, coords.y, nodeSize, nodeSize)
-    })
+    construction.nodes.forEach(node => drawNode(construction, node))
+    construction.rods.forEach(rod => drawRod(construction, rod))
+}
 
-    construction.rods.forEach(rod => {
-
-    })
+clearCanvas = () =>
+{
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
 update = () =>
@@ -108,5 +144,6 @@ update = () =>
     let construction = parseConstruction(inp)
     // console.log(construction)
     
+    clearCanvas()
     drawConstruction(construction)
 }
