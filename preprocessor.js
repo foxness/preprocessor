@@ -12,16 +12,27 @@ let defaultInput =
 
 `
 
+let constructionPercentage = 0.7
+let nodeSize = 5
+let rodWidth = 10
+
+let canvas = null
+let ctx = null
+
 $(document).ready(() =>
 {
-    let canvas = document.getElementById("canvas")
-    window.ctx = canvas.getContext("2d")
+    canvas = document.getElementById("canvas")
+    ctx = canvas.getContext("2d")
     $("#input").val(defaultInput.trim())
     update()
 })
 
 parseConstruction = (raw) =>
 {
+    // todo: find out why this line
+    // raw.replace("\r", "").replace("\n", " ").split(" ").filter(x => x.length > 0)
+    // doesn't work but the next line does
+
     let numbers = raw.replace(/\n|\r/g, " ").split(" ").filter(x => x.length > 0)
     let construction = {}
 
@@ -60,12 +71,42 @@ parseConstruction = (raw) =>
     return construction
 }
 
+getNodeCanvasCoords = (construction, node) =>
+{
+    let xMin = Math.min(...construction.nodes.map(a => a.x))
+    let xMax = Math.max(...construction.nodes.map(a => a.x))
+
+    let yMin = Math.min(...construction.nodes.map(a => a.y))
+    let yMax = Math.max(...construction.nodes.map(a => a.y))
+
+    let xSize = xMax - xMin
+    let ySize = yMax - yMin
+
+    let x = (xSize == 0 ? 0.5 : ((1 - constructionPercentage) / 2) + (node.x - xMin) / xSize * constructionPercentage) * canvas.width
+    let y = (ySize == 0 ? 0.5 : ((1 - constructionPercentage) / 2) + (node.y - yMin) / ySize * constructionPercentage) * canvas.height
+
+    return { x: x, y: y }
+}
+
+drawConstruction = (construction) =>
+{
+    ctx.fillStyle = "#ffffff"
+
+    construction.nodes.forEach(node => {
+        let coords = getNodeCanvasCoords(construction, node)
+        ctx.fillRect(coords.x, coords.y, nodeSize, nodeSize)
+    })
+
+    construction.rods.forEach(rod => {
+
+    })
+}
+
 update = () =>
 {
     let inp = $("textarea").val()
     let construction = parseConstruction(inp)
-    console.log(construction)
-    // alert(inp)
-    // ctx.fillStyle = "#FF0000"
-    // ctx.fillRect(0,0,150,75)
+    // console.log(construction)
+    
+    drawConstruction(construction)
 }
