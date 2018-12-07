@@ -32,6 +32,11 @@ let nodeSize = 5
 let canvas = null
 let ctx = null
 
+let camera = {
+    x: -200,
+    y: -250,
+    zoom: 300
+}
 let construction = null
 
 $(document).ready(() =>
@@ -63,6 +68,7 @@ parseConstruction = (raw) =>
         let node = {}
 
         node.x = parseFloat(getNextNumber())
+        node.y = 0
 
         node.xPermit = parseInt(getNextNumber())
         node.yPermit = parseInt(getNextNumber())
@@ -88,41 +94,38 @@ parseConstruction = (raw) =>
     return construction
 }
 
-getConstructionParams = (construction) =>
+// getConstructionParams = (construction) =>
+// {
+//     let xMin = Math.min(...construction.nodes.map(a => a.x))
+//     let xMax = Math.max(...construction.nodes.map(a => a.x))
+
+//     let xSize = xMax - xMin
+
+//     return {
+//         xMin: xMin,
+//         xMax: xMax,
+//         xSize: xSize,
+//     }
+// }
+
+getPointCanvasCoords = (point) =>
 {
-    let xMin = Math.min(...construction.nodes.map(a => a.x))
-    let xMax = Math.max(...construction.nodes.map(a => a.x))
-
-    let xSize = xMax - xMin
-
-    return {
-        xMin: xMin,
-        xMax: xMax,
-        xSize: xSize,
-    }
-}
-
-getNodeCanvasCoords = (constructionParams, node) =>
-{
-    let xMin = constructionParams.xMin
-    let xSize = constructionParams.xSize
-
-    let x = (xSize == 0 ? 0.5 : ((1 - constructionPercentage) / 2) + (node.x - xMin) / xSize * constructionPercentage) * canvas.width
-    let y = 0.5 * canvas.height
+    let x = (point.x * camera.zoom) - camera.x
+    let y = (point.y * camera.zoom) - camera.y
 
     return { x: x, y: y }
 }
 
-drawNode = (constructionParams, node) =>
+drawNode = (node) =>
 {
-    let coords = getNodeCanvasCoords(constructionParams, node)
+    let coords = getPointCanvasCoords(node)
     ctx.fillRect(coords.x - nodeSize / 2, coords.y - nodeSize / 2, nodeSize, nodeSize)
 }
 
-drawRod = (construction, constructionParams, rod) =>
+drawRod = (construction, rod) =>
 {
-    let start = getNodeCanvasCoords(constructionParams, construction.nodes[rod.startNode])
-    let end = getNodeCanvasCoords(constructionParams, construction.nodes[rod.endNode])
+    let start = getPointCanvasCoords(construction.nodes[rod.startNode])
+    let end = getPointCanvasCoords(construction.nodes[rod.endNode])
 
     let rodWidth = rod.width * 10
 
@@ -156,10 +159,8 @@ drawConstruction = (construction) =>
     ctx.fillStyle = "#ffffff"
     ctx.strokeStyle = "#ffffff"
 
-    let constructionParams = getConstructionParams(construction)
-
-    construction.nodes.forEach(node => drawNode(constructionParams, node))
-    construction.rods.forEach(rod => drawRod(construction, constructionParams, rod))
+    construction.nodes.forEach(node => drawNode(node))
+    construction.rods.forEach(rod => drawRod(construction, rod))
 }
 
 clearCanvas = () =>
@@ -191,6 +192,7 @@ addRod = () =>
     let node = {}
 
     node.x = construction.nodes[construction.nodes.length - 1].x + parseFloat(rawLength)
+    node.y = 0
 
     node.xPermit = 0
     node.yPermit = 0
@@ -208,5 +210,41 @@ addRod = () =>
 
     construction.rods.push(rod)
 
+    redraw()
+}
+
+goUp = () =>
+{
+    camera.y -= 10
+    redraw()
+}
+
+goDown = () =>
+{
+    camera.y += 10
+    redraw()
+}
+
+goLeft = () =>
+{
+    camera.x -= 10
+    redraw()
+}
+
+goRight = () =>
+{
+    camera.x += 10
+    redraw()
+}
+
+goIn = () =>
+{
+    camera.zoom += 10
+    redraw()
+}
+
+goOut = () =>
+{
+    camera.zoom -= 10
     redraw()
 }
