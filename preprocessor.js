@@ -52,11 +52,11 @@ parseConstruction = (raw) =>
     let cur = 0
     getNextNumber = () => numbers[cur++]
 
-    construction.nodeCount = parseInt(getNextNumber())
-    construction.rodCount = parseInt(getNextNumber())
+    let nodeCount = parseInt(getNextNumber())
+    let rodCount = parseInt(getNextNumber())
 
     construction.nodes = []
-    for (let i = 0; i < construction.nodeCount; ++i)
+    for (let i = 0; i < nodeCount; ++i)
     {
         let node = {}
 
@@ -70,7 +70,7 @@ parseConstruction = (raw) =>
     }
 
     construction.rods = []
-    for (let i = 0; i < construction.rodCount; ++i)
+    for (let i = 0; i < rodCount; ++i)
     {
         let rod = {}
 
