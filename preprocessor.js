@@ -16,8 +16,8 @@ let defaultInput =
 
 // nodeCount rodCount
 
-// node1x node1y node1xPermit node1yPermit node1zPermit
-// node2x node2y node2xPermit node2yPermit node2zPermit
+// node1x node1xPermit node1yPermit node1zPermit
+// node2x node2xPermit node2yPermit node2zPermit
 // ...
 
 // rod1startNode rod1endNode rod1width rod1height
@@ -87,7 +87,7 @@ parseConstruction = (raw) =>
     return construction
 }
 
-getNodeCanvasCoords = (construction, node) =>
+getConstructionParams = (construction) =>
 {
     let xMin = Math.min(...construction.nodes.map(a => a.x))
     let xMax = Math.max(...construction.nodes.map(a => a.x))
@@ -98,22 +98,40 @@ getNodeCanvasCoords = (construction, node) =>
     let xSize = xMax - xMin
     let ySize = yMax - yMin
 
+    return {
+        xMin: xMin,
+        xMax: xMax,
+        yMin: yMin,
+        yMax: yMax,
+        xSize: xSize,
+        ySize: ySize
+    }
+}
+
+getNodeCanvasCoords = (constructionParams, node) =>
+{
+    let xMin = constructionParams.xMin
+    let yMin = constructionParams.yMin
+
+    let xSize = constructionParams.xSize
+    let ySize = constructionParams.ySize
+
     let x = (xSize == 0 ? 0.5 : ((1 - constructionPercentage) / 2) + (node.x - xMin) / xSize * constructionPercentage) * canvas.width
     let y = (ySize == 0 ? 0.5 : ((1 - constructionPercentage) / 2) + (node.y - yMin) / ySize * constructionPercentage) * canvas.height
 
     return { x: x, y: y }
 }
 
-drawNode = (construction, node) =>
+drawNode = (constructionParams, node) =>
 {
-    let coords = getNodeCanvasCoords(construction, node)
+    let coords = getNodeCanvasCoords(constructionParams, node)
     ctx.fillRect(coords.x - nodeSize / 2, coords.y - nodeSize / 2, nodeSize, nodeSize)
 }
 
-drawRod = (construction, rod) =>
+drawRod = (construction, constructionParams, rod) =>
 {
-    let start = getNodeCanvasCoords(construction, construction.nodes[rod.startNode])
-    let end = getNodeCanvasCoords(construction, construction.nodes[rod.endNode])
+    let start = getNodeCanvasCoords(constructionParams, construction.nodes[rod.startNode])
+    let end = getNodeCanvasCoords(constructionParams, construction.nodes[rod.endNode])
 
     let rodWidth = rod.width * 10
 
@@ -147,8 +165,10 @@ drawConstruction = (construction) =>
     ctx.fillStyle = "#ffffff"
     ctx.strokeStyle = "#ffffff"
 
-    construction.nodes.forEach(node => drawNode(construction, node))
-    construction.rods.forEach(rod => drawRod(construction, rod))
+    let constructionParams = getConstructionParams(construction)
+
+    construction.nodes.forEach(node => drawNode(constructionParams, node))
+    construction.rods.forEach(rod => drawRod(construction, constructionParams, rod))
 }
 
 clearCanvas = () =>
