@@ -3,9 +3,9 @@ let defaultInput =
 
 3 2
 
-0 0 0 0 0
-0.5 0.1 1 1 1
-1 0 0 0 0
+0 0 0 0
+0.5 1 1 1
+1 0 0 0
 
 0 1 1 2
 1 2 2 1
@@ -61,7 +61,6 @@ parseConstruction = (raw) =>
         let node = {}
 
         node.x = parseFloat(getNextNumber())
-        node.y = parseFloat(getNextNumber())
 
         node.xPermit = parseInt(getNextNumber())
         node.yPermit = parseInt(getNextNumber())
@@ -92,32 +91,22 @@ getConstructionParams = (construction) =>
     let xMin = Math.min(...construction.nodes.map(a => a.x))
     let xMax = Math.max(...construction.nodes.map(a => a.x))
 
-    let yMin = Math.min(...construction.nodes.map(a => a.y))
-    let yMax = Math.max(...construction.nodes.map(a => a.y))
-
     let xSize = xMax - xMin
-    let ySize = yMax - yMin
 
     return {
         xMin: xMin,
         xMax: xMax,
-        yMin: yMin,
-        yMax: yMax,
         xSize: xSize,
-        ySize: ySize
     }
 }
 
 getNodeCanvasCoords = (constructionParams, node) =>
 {
     let xMin = constructionParams.xMin
-    let yMin = constructionParams.yMin
-
     let xSize = constructionParams.xSize
-    let ySize = constructionParams.ySize
 
     let x = (xSize == 0 ? 0.5 : ((1 - constructionPercentage) / 2) + (node.x - xMin) / xSize * constructionPercentage) * canvas.width
-    let y = (ySize == 0 ? 0.5 : ((1 - constructionPercentage) / 2) + (node.y - yMin) / ySize * constructionPercentage) * canvas.height
+    let y = 0.5 * canvas.height
 
     return { x: x, y: y }
 }
