@@ -32,6 +32,8 @@ let nodeSize = 5
 let canvas = null
 let ctx = null
 
+let construction = null
+
 $(document).ready(() =>
 {
     canvas = document.getElementById("canvas")
@@ -165,12 +167,46 @@ clearCanvas = () =>
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
+redraw = () =>
+{
+    clearCanvas()
+    drawConstruction(construction)
+}
+
 update = () =>
 {
     let inp = $("textarea").val()
-    let construction = parseConstruction(inp)
+    construction = parseConstruction(inp)
     // console.log(construction)
     
-    clearCanvas()
-    drawConstruction(construction)
+    redraw()
+}
+
+addRod = () =>
+{
+    let rawLength = $("#rodLength").val()
+    let rawWidth = $("#rodWidth").val()
+    let rawHeight = $("#rodHeight").val()
+
+    let node = {}
+
+    node.x = construction.nodes[construction.nodes.length - 1].x + parseFloat(rawLength)
+
+    node.xPermit = 0
+    node.yPermit = 0
+    node.zPermit = 0
+
+    construction.nodes.push(node)
+
+    let rod = {}
+
+    rod.startNode = construction.nodes.length - 2
+    rod.endNode = construction.nodes.length - 1
+
+    rod.width = parseFloat(rawWidth)
+    rod.height = parseFloat(rawHeight)
+
+    construction.rods.push(rod)
+
+    redraw()
 }
