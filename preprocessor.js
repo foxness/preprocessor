@@ -7,8 +7,8 @@ let defaultInput =
 0.5 1 1 1
 1 0 0 0
 
-0 1 1 2
-1 2 2 1
+0 1 0.1 2
+1 2 0.2 1
 
 ` 
 
@@ -124,33 +124,44 @@ drawNode = (node) =>
 
 drawRod = (construction, rod) =>
 {
-    let start = getPointCanvasCoords(construction.nodes[rod.startNode])
-    let end = getPointCanvasCoords(construction.nodes[rod.endNode])
-
-    let rodWidth = rod.width * 10
+    let start = construction.nodes[rod.startNode]
+    let end = construction.nodes[rod.endNode]
 
     let vx = start.x - end.x
     let vy = start.y - end.y
     let angle = Math.atan2(vy, vx)
 
-    let x0 = start.x + Math.cos(angle + Math.PI / 2) * rodWidth / 2
-    let y0 = start.y + Math.sin(angle + Math.PI / 2) * rodWidth / 2
+    let point0 = {
+        x: start.x + Math.cos(angle + Math.PI / 2) * rod.width / 2,
+        y: start.y + Math.sin(angle + Math.PI / 2) * rod.width / 2
+    }
 
-    let x1 = start.x + Math.cos(angle - Math.PI / 2) * rodWidth / 2
-    let y1 = start.y + Math.sin(angle - Math.PI / 2) * rodWidth / 2
+    let point1 = {
+        x: start.x + Math.cos(angle - Math.PI / 2) * rod.width / 2,
+        y: start.y + Math.sin(angle - Math.PI / 2) * rod.width / 2
+    }
 
-    let x2 = end.x + Math.cos(angle - Math.PI / 2) * rodWidth / 2
-    let y2 = end.y + Math.sin(angle - Math.PI / 2) * rodWidth / 2
+    let point2 = {
+        x: end.x + Math.cos(angle - Math.PI / 2) * rod.width / 2,
+        y: end.y + Math.sin(angle - Math.PI / 2) * rod.width / 2
+    }
 
-    let x3 = end.x + Math.cos(angle + Math.PI / 2) * rodWidth / 2
-    let y3 = end.y + Math.sin(angle + Math.PI / 2) * rodWidth / 2
+    let point3 = {
+        x: end.x + Math.cos(angle + Math.PI / 2) * rod.width / 2,
+        y: end.y + Math.sin(angle + Math.PI / 2) * rod.width / 2
+    }
+    
+    let canvasPoint0 = getPointCanvasCoords(point0)
+    let canvasPoint1 = getPointCanvasCoords(point1)
+    let canvasPoint2 = getPointCanvasCoords(point2)
+    let canvasPoint3 = getPointCanvasCoords(point3)
 
     ctx.beginPath()
-    ctx.moveTo(x0, y0)
-    ctx.lineTo(x1, y1)
-    ctx.lineTo(x2, y2)
-    ctx.lineTo(x3, y3)
-    ctx.lineTo(x0, y0)
+    ctx.moveTo(canvasPoint0.x, canvasPoint0.y)
+    ctx.lineTo(canvasPoint1.x, canvasPoint1.y)
+    ctx.lineTo(canvasPoint2.x, canvasPoint2.y)
+    ctx.lineTo(canvasPoint3.x, canvasPoint3.y)
+    ctx.lineTo(canvasPoint0.x, canvasPoint0.y)
     ctx.stroke()
 }
 
