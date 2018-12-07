@@ -7,14 +7,27 @@ let defaultInput =
 0.5 0.1 1 1 1
 1 0 0 0 0
 
-0 1
-1 2
+0 1 1 2
+1 2 2 1
 
-`
+` 
+
+// `
+
+// nodeCount rodCount
+
+// node1x node1y node1xPermit node1yPermit node1zPermit
+// node2x node2y node2xPermit node2yPermit node2zPermit
+// ...
+
+// rod1startNode rod1endNode rod1width rod1height
+// rod2startNode rod2endNode rod2width rod2height
+// ...
+
+// ` 
 
 let constructionPercentage = 0.7
 let nodeSize = 5
-let rodWidth = 20
 
 let canvas = null
 let ctx = null
@@ -65,6 +78,9 @@ parseConstruction = (raw) =>
         rod.startNode = parseInt(getNextNumber())
         rod.endNode = parseInt(getNextNumber())
 
+        rod.width = parseFloat(getNextNumber())
+        rod.height = parseFloat(getNextNumber())
+
         construction.rods.push(rod)
     }
 
@@ -98,6 +114,8 @@ drawRod = (construction, rod) =>
 {
     let start = getNodeCanvasCoords(construction, construction.nodes[rod.startNode])
     let end = getNodeCanvasCoords(construction, construction.nodes[rod.endNode])
+
+    let rodWidth = rod.width * 10
 
     let vx = start.x - end.x
     let vy = start.y - end.y
