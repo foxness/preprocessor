@@ -11,8 +11,6 @@
         <div class="main">
             <canvas id="canvas" width="600" height="500"></canvas>
             <div class="controls">
-                <textarea id="input"></textarea>
-                <button id="updateButton" onclick="update();">Update</button>
                 <div class="rodControls">
                     <input id="rodLength" placeholder="Length">
                     <input id="rodWidth" placeholder="Width">
@@ -22,6 +20,7 @@
                     </select>
                     <button id="addRod" onclick="addRod();">Add Rod</button>
                 </div>
+                <textarea readonly id="debugArea"></textarea>
                 <button id="debug" onclick="debug();">Debug</button>
             </div>
         </div>

@@ -4,7 +4,7 @@ let defaultInput =
 3 2
 
 0 0 0 0
-0.5 1 1 1
+0.5 0 0 0
 1 0 0 0
 
 0 1 0.1 2
@@ -32,7 +32,7 @@ let nodeSize = 5
 let canvas = null
 let ctx = null
 
-let zoomMagnitude = 30
+let zoomMagnitude = 0.1
 
 let camera = {
     x: -200,
@@ -54,7 +54,6 @@ $(document).ready(() =>
 {
     canvas = document.getElementById("canvas")
     ctx = canvas.getContext("2d")
-    $("#input").val(defaultInput.trim())
 
     $("#canvas").mousedown((e) => { handleMouseDown(e) })
     $("#canvas").mousemove((e) => { handleMouseMove(e) })
@@ -66,14 +65,16 @@ $(document).ready(() =>
     canvasOffsetX = offset.left
     canvasOffsetY = offset.top
 
-    update()
+    construction = parseConstruction(defaultInput.trim())
+    updateControls(construction)
+    redraw()
 })
 
 handleMouseWheel = (e) =>
 {
     if (e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0)
     {
-        camera.zoom -= zoomMagnitude
+        camera.zoom *= 1 - zoomMagnitude
 
         if (camera.zoom < 1)
         {
@@ -82,7 +83,7 @@ handleMouseWheel = (e) =>
     }
     else
     {
-        camera.zoom += zoomMagnitude
+        camera.zoom *= 1 + zoomMagnitude
     }
     
     redraw()
@@ -283,17 +284,6 @@ redraw = () =>
     drawConstruction(construction)
 }
 
-update = () =>
-{
-    let inp = $("textarea").val()
-    construction = parseConstruction(inp)
-    // console.log(construction)
-
-    updateControls(construction)
-    
-    redraw()
-}
-
 updateControls = (construction) =>
 {
     let options = {}
@@ -308,11 +298,8 @@ updateControls = (construction) =>
     {
         sel.append($("<option></option>").attr("value", value).text(key))
     })
-}
 
-debug = () =>
-{
-    console.log(construction)
+    $("#debugArea").text(JSON.stringify(construction))
 }
 
 addRod = () =>
@@ -321,30 +308,6 @@ addRod = () =>
     let width = parseFloat($("#rodWidth").val())
     let height = parseFloat($("#rodHeight").val())
     let position = parseInt($('#rodPosition').find(":selected").val())
-
-    // if (position == construction.nodes.length - 1)
-    // {
-    //     let node = {}
-
-    //     node.x = construction.nodes[construction.nodes.length - 1].x + length
-    //     node.y = 0
-    
-    //     node.xPermit = 0
-    //     node.yPermit = 0
-    //     node.zPermit = 0
-    
-    //     construction.nodes.push(node)
-    
-    //     let rod = {}
-    
-    //     rod.startNode = construction.nodes.length - 2
-    //     rod.endNode = construction.nodes.length - 1
-    
-    //     rod.width = width
-    //     rod.height = height
-    
-    //     construction.rods.push(rod)
-    // }
 
     let node = {}
 
@@ -379,4 +342,9 @@ addRod = () =>
 
     updateControls(construction)
     redraw()
+}
+
+debug = () =>
+{
+    alert(camera.zoom)
 }
