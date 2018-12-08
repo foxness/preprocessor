@@ -74,6 +74,11 @@ handleMouseWheel = (e) =>
     if (e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0)
     {
         camera.zoom -= zoomMagnitude
+
+        if (camera.zoom < 1)
+        {
+            camera.zoom = 1
+        }
     }
     else
     {
@@ -283,8 +288,26 @@ update = () =>
     let inp = $("textarea").val()
     construction = parseConstruction(inp)
     // console.log(construction)
+
+    updateControls(construction)
     
     redraw()
+}
+
+updateControls = (construction) =>
+{
+    let options = {}
+    for (let i = 0; i < construction.nodes.length; ++i)
+    {
+        options["Node " + i] = i
+    }
+    
+    let sel = $("#rodPosition")
+    sel.empty()
+    $.each(options, (key, value) =>
+    {
+        sel.append($("<option></option>").attr("value", value).text(key))
+    })
 }
 
 addRod = () =>
