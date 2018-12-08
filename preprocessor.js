@@ -310,32 +310,73 @@ updateControls = (construction) =>
     })
 }
 
+debug = () =>
+{
+    console.log(construction)
+}
+
 addRod = () =>
 {
-    let rawLength = $("#rodLength").val()
-    let rawWidth = $("#rodWidth").val()
-    let rawHeight = $("#rodHeight").val()
+    let length = parseFloat($("#rodLength").val())
+    let width = parseFloat($("#rodWidth").val())
+    let height = parseFloat($("#rodHeight").val())
+    let position = parseInt($('#rodPosition').find(":selected").val())
+
+    // if (position == construction.nodes.length - 1)
+    // {
+    //     let node = {}
+
+    //     node.x = construction.nodes[construction.nodes.length - 1].x + length
+    //     node.y = 0
+    
+    //     node.xPermit = 0
+    //     node.yPermit = 0
+    //     node.zPermit = 0
+    
+    //     construction.nodes.push(node)
+    
+    //     let rod = {}
+    
+    //     rod.startNode = construction.nodes.length - 2
+    //     rod.endNode = construction.nodes.length - 1
+    
+    //     rod.width = width
+    //     rod.height = height
+    
+    //     construction.rods.push(rod)
+    // }
 
     let node = {}
 
-    node.x = construction.nodes[construction.nodes.length - 1].x + parseFloat(rawLength)
+    node.x = construction.nodes[position].x
     node.y = 0
 
     node.xPermit = 0
     node.yPermit = 0
     node.zPermit = 0
 
-    construction.nodes.push(node)
-
     let rod = {}
 
-    rod.startNode = construction.nodes.length - 2
-    rod.endNode = construction.nodes.length - 1
+    rod.startNode = position
+    rod.endNode = position + 1
 
-    rod.width = parseFloat(rawWidth)
-    rod.height = parseFloat(rawHeight)
+    rod.width = width
+    rod.height = height
 
-    construction.rods.push(rod)
+    for (let i = position; i < construction.nodes.length; ++i)
+    {
+        construction.nodes[i].x += length
+    }
 
+    for (let i = position; i < construction.rods.length; ++i)
+    {
+        construction.rods[i].startNode += 1
+        construction.rods[i].endNode += 1
+    }
+
+    construction.nodes.splice(position, 0, node)
+    construction.rods.splice(position, 0, rod)
+
+    updateControls(construction)
     redraw()
 }
