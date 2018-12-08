@@ -32,20 +32,113 @@ let nodeSize = 5
 let canvas = null
 let ctx = null
 
+let zoomMagnitude = 30
+
 let camera = {
     x: -200,
     y: -250,
     zoom: 300
 }
+
 let construction = null
+
+let canvasOffsetX = null
+let canvasOffsetY = null
+let dragging = false
+let startDragX = null
+let startDragY = null
+let offsetDragX = 0
+let offsetDragY = 0
 
 $(document).ready(() =>
 {
     canvas = document.getElementById("canvas")
     ctx = canvas.getContext("2d")
     $("#input").val(defaultInput.trim())
+
+    $("#canvas").mousedown((e) => { handleMouseDown(e) })
+    $("#canvas").mousemove((e) => { handleMouseMove(e) })
+    $("#canvas").mouseup((e) => { handleMouseUp(e) })
+    $("#canvas").mouseleave(() => { handleMouseLeave() })
+    $("#canvas").on('DOMMouseScroll mousewheel', (e) => { handleMouseWheel(e) })
+
+    let offset = $("#canvas").offset()
+    canvasOffsetX = offset.left
+    canvasOffsetY = offset.top
+
     update()
 })
+
+handleMouseWheel = (e) =>
+{
+    if (e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0)
+    {
+        camera.zoom -= zoomMagnitude
+    }
+    else
+    {
+        camera.zoom += zoomMagnitude
+    }
+    
+    redraw()
+    return false
+}
+
+handleMouseDown = (e) =>
+{
+    let mx = e.clientX - canvasOffsetX
+    let my = e.clientY - canvasOffsetY
+
+    startDragX = mx
+    startDragY = my
+
+    dragging = true
+}
+
+handleMouseMove = (e) =>
+{
+    if (dragging)
+    {
+        let mx = e.clientX - canvasOffsetX
+        let my = e.clientY - canvasOffsetY
+
+        offsetDragX = mx - startDragX
+        offsetDragY = my - startDragY
+
+        redraw()
+    }
+}
+
+handleMouseUp = (e) =>
+{
+    if (dragging)
+    {
+        let mx = e.clientX - canvasOffsetX
+        let my = e.clientY - canvasOffsetY
+
+        camera.x -= offsetDragX
+        camera.y -= offsetDragY
+
+        offsetDragX = 0
+        offsetDragY = 0
+
+        dragging = false
+        redraw()
+    }
+}
+
+handleMouseLeave = () =>
+{
+    if (dragging)
+    {
+        offsetDragX = 0
+        offsetDragY = 0
+    
+        dragging = false
+    
+        redraw()
+    }
+}
 
 parseConstruction = (raw) =>
 {
@@ -110,8 +203,8 @@ parseConstruction = (raw) =>
 
 getPointCanvasCoords = (point) =>
 {
-    let x = (point.x * camera.zoom) - camera.x
-    let y = (point.y * camera.zoom) - camera.y
+    let x = (point.x * camera.zoom) - camera.x + offsetDragX
+    let y = (point.y * camera.zoom) - camera.y + offsetDragY
 
     return { x: x, y: y }
 }
@@ -221,41 +314,5 @@ addRod = () =>
 
     construction.rods.push(rod)
 
-    redraw()
-}
-
-goUp = () =>
-{
-    camera.y -= 10
-    redraw()
-}
-
-goDown = () =>
-{
-    camera.y += 10
-    redraw()
-}
-
-goLeft = () =>
-{
-    camera.x -= 10
-    redraw()
-}
-
-goRight = () =>
-{
-    camera.x += 10
-    redraw()
-}
-
-goIn = () =>
-{
-    camera.zoom += 10
-    redraw()
-}
-
-goOut = () =>
-{
-    camera.zoom -= 10
     redraw()
 }
