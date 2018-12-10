@@ -5,6 +5,7 @@
 // commit 5: added force drawing
 // commit 6: removed y force
 // commit 7: added permit setting & finished removing y force
+// commit 8: added permit drawing
 
 let defaultInput =
 `
@@ -39,6 +40,11 @@ let nodeSize = 5
 
 let arrowDist = 20
 let arrowLength = 15
+
+let permitStrokeCount = 4
+let permitSize = 30
+let permitDx = 10
+let permitDy = 10
 
 let canvas = null
 let ctx = null
@@ -229,7 +235,28 @@ getPointCanvasCoords = (point) =>
 drawNode = (node) =>
 {
     let coords = getPointCanvasCoords(node)
-    ctx.fillRect(coords.x - nodeSize / 2, coords.y - nodeSize / 2, nodeSize, nodeSize)
+    // ctx.fillRect(coords.x - nodeSize / 2, coords.y - nodeSize / 2, nodeSize, nodeSize)
+	
+	if (node.permit == 0)
+	{
+		for (let i = 0; i < permitStrokeCount; ++i)
+		{
+			let start = {
+				x: coords.x + (permitDx / 2),
+				y: coords.y - (permitSize / 2) + (permitSize / permitStrokeCount) * i * 2
+			}
+			
+			let end = {
+				x: start.x - permitDx,
+				y: start.y - permitDy
+			}
+			
+			ctx.beginPath()
+			ctx.moveTo(start.x, start.y)
+			ctx.lineTo(end.x, end.y)
+			ctx.stroke()
+		}
+	}
 }
 
 drawRod = (construction, rod) =>
