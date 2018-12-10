@@ -3,6 +3,7 @@
 // commit 3: added force setting
 // commit 4: added arrow drawing
 // commit 5: added force drawing
+// commit 6: removed y force
 
 let defaultInput =
 `
@@ -13,8 +14,8 @@ let defaultInput =
 0.5 0
 1 0
 
-0 1 0.1 2 1 0
-1 2 0.2 1 0 1
+0 1 0.1 2 1
+1 2 0.2 1 0
 
 ` 
 
@@ -26,8 +27,8 @@ let defaultInput =
 // node2x node2xPermit
 // ...
 
-// rod1startNode rod1endNode rod1width rod1height forceX1 forceY1
-// rod2startNode rod2endNode rod2width rod2height forceX2 forceY2
+// rod1startNode rod1endNode rod1width rod1height forceX1
+// rod2startNode rod2endNode rod2width rod2height forceX2
 // ...
 
 // ` 
@@ -194,8 +195,7 @@ parseConstruction = (raw) =>
         rod.width = parseFloat(getNextNumber())
         rod.height = parseFloat(getNextNumber())
 		
-		rod.forceX = parseFloat(getNextNumber())
-        rod.forceY = parseFloat(getNextNumber())
+		rod.force = parseFloat(getNextNumber())
 
         construction.rods.push(rod)
     }
@@ -273,8 +273,7 @@ drawRod = (construction, rod) =>
     ctx.lineTo(canvasPoint0.x, canvasPoint0.y)
     ctx.stroke()
 	
-	drawXForce(construction, rod)
-	drawYForce(construction, rod)
+	drawRodForce(rod)
 }
 
 drawArrow = (x, y, length, angle) =>
@@ -311,9 +310,9 @@ drawArrow = (x, y, length, angle) =>
     ctx.stroke()
 }
 
-drawXForce = (construction, rod) =>
+drawRodForce = (rod) =>
 {
-	if (rod.forceX < 0.001)
+	if (rod.force < 0.001)
 	{
 		return
 	}
@@ -325,27 +324,8 @@ drawXForce = (construction, rod) =>
 	
 	for (let i = 0; i < arrowCount; ++i)
 	{
-		let angle = rod.forceX > 0 ? 0 : Math.PI
-		drawArrow(start.x + i * arrowDist, start.y, rod.forceX * arrowLength, angle)
-	}
-}
-
-drawYForce = (construction, rod) =>
-{
-	if (rod.forceY < 0.001)
-	{
-		return
-	}
-	
-	let start = getPointCanvasCoords(construction.nodes[rod.startNode])
-    let end = getPointCanvasCoords(construction.nodes[rod.endNode])
-	
-	let arrowCount = Math.floor(Math.abs(start.x - end.x) / 20)
-	
-	for (let i = 0; i < arrowCount; ++i)
-	{
-		let angle = rod.forceY > 0 ? Math.PI / 2 : -Math.PI / 2
-		drawArrow(start.x + i * arrowDist, start.y, rod.forceY * arrowLength, angle)
+		let angle = rod.force > 0 ? 0 : Math.PI
+		drawArrow(start.x + i * arrowDist, start.y, rod.force * arrowLength, angle)
 	}
 }
 
