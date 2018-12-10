@@ -13,6 +13,7 @@
 // commit 13: improved arrow drawing
 // commit 14: added construction file saving
 // commit 15: added construction file opening
+// commit 16: improved drawing constants
 
 let defaultInput =
 `
@@ -20,11 +21,11 @@ let defaultInput =
 3 2
 
 0 0 0
-0.5 0 0
-1 0 1
+3 1 0
+5 0 1
 
-0 1 0.1 1
-1 2 0.2 0
+0 1 2 1
+1 2 3 0
 
 ` 
 
@@ -45,8 +46,8 @@ let defaultInput =
 let constructionPercentage = 0.7
 let nodeSize = 5
 
-let arrowDist = 0.09
-let arrowLength = 0.06
+let arrowDist = 0.4
+let arrowLength = 0.3
 
 let permitStrokeCount = 4
 let permitSize = 30
@@ -61,7 +62,7 @@ let zoomMagnitude = 0.1
 let camera = {
     x: -200,
     y: -250,
-    zoom: 300
+    zoom: 50
 }
 
 let construction = null
