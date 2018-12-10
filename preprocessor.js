@@ -9,6 +9,7 @@
 // commit 9: fixed negative force drawing
 // commit 10: added node force setting
 // commit 11: added node force drawing
+// commit 12: removed rod height
 
 let defaultInput =
 `
@@ -19,8 +20,8 @@ let defaultInput =
 0.5 0 0
 1 0 1
 
-0 1 0.1 2 1
-1 2 0.2 1 0
+0 1 0.1 1
+1 2 0.2 0
 
 ` 
 
@@ -32,8 +33,8 @@ let defaultInput =
 // node2x node2xPermit node2force
 // ...
 
-// rod1startNode rod1endNode rod1width rod1height forceX1
-// rod2startNode rod2endNode rod2width rod2height forceX2
+// rod1startNode rod1endNode rod1width forceX1
+// rod2startNode rod2endNode rod2width forceX2
 // ...
 
 // ` 
@@ -204,7 +205,6 @@ parseConstruction = (raw) =>
         rod.endNode = parseInt(getNextNumber())
 
         rod.width = parseFloat(getNextNumber())
-        rod.height = parseFloat(getNextNumber())
 		
 		rod.force = parseFloat(getNextNumber())
 
@@ -465,7 +465,6 @@ addRod = () =>
 {
     let length = parseFloat($("#rodLength").val())
     let width = parseFloat($("#rodWidth").val())
-    let height = parseFloat($("#rodHeight").val())
     let position = parseInt($('#rodPosition').find(":selected").val())
 
     let node = {}
@@ -481,7 +480,6 @@ addRod = () =>
     rod.endNode = position + 1
 
     rod.width = width
-    rod.height = height
 
     for (let i = position; i < construction.nodes.length; ++i)
     {
