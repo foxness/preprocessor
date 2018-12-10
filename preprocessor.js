@@ -10,6 +10,7 @@
 // commit 10: added node force setting
 // commit 11: added node force drawing
 // commit 12: removed rod height
+// commit 13: improved arrow drawing
 
 let defaultInput =
 `
@@ -42,8 +43,8 @@ let defaultInput =
 let constructionPercentage = 0.7
 let nodeSize = 5
 
-let arrowDist = 20
-let arrowLength = 15
+let arrowDist = 0.09
+let arrowLength = 0.06
 
 let permitStrokeCount = 4
 let permitSize = 30
@@ -275,7 +276,7 @@ drawNodeForce = (node) =>
 	}
 	
 	let angle = node.force > 0 ? 0 : Math.PI
-	drawArrow(coords.x, coords.y, Math.abs(node.force) * arrowLength, angle)
+	drawArrow(coords.x, coords.y, 1, angle)
 }
 
 drawRod = (construction, rod) =>
@@ -325,24 +326,26 @@ drawRod = (construction, rod) =>
 
 drawArrow = (x, y, length, angle) =>
 {
+	let size = arrowLength * camera.zoom * length
+	
 	let point0 = {
 		x: x,
 		y: y
 	}
 	
 	let point1 = {
-		x: point0.x + Math.cos(angle) * length,
-		y: point0.y + Math.sin(angle) * length
+		x: point0.x + Math.cos(angle) * size,
+		y: point0.y + Math.sin(angle) * size
 	}
 	
 	let point2 = {
-		x: point1.x + Math.cos(angle + Math.PI - Math.PI / 6) * (length / 3),
-		y: point1.y + Math.sin(angle + Math.PI - Math.PI / 6) * (length / 3)
+		x: point1.x + Math.cos(angle + Math.PI - Math.PI / 6) * (size / 3),
+		y: point1.y + Math.sin(angle + Math.PI - Math.PI / 6) * (size / 3)
 	}
 	
 	let point3 = {
-		x: point1.x + Math.cos(angle + Math.PI + Math.PI / 6) * (length / 3),
-		y: point1.y + Math.sin(angle + Math.PI + Math.PI / 6) * (length / 3)
+		x: point1.x + Math.cos(angle + Math.PI + Math.PI / 6) * (size / 3),
+		y: point1.y + Math.sin(angle + Math.PI + Math.PI / 6) * (size / 3)
 	}
 	
 	ctx.beginPath()
@@ -367,7 +370,8 @@ drawRodForce = (rod) =>
 	let start = getPointCanvasCoords(construction.nodes[rod.startNode])
     let end = getPointCanvasCoords(construction.nodes[rod.endNode])
 	
-	let arrowCount = Math.floor(Math.abs(start.x - end.x) / 20)
+	let arrowDistSize = arrowDist * camera.zoom
+	let arrowCount = Math.floor(Math.abs(start.x - end.x) / arrowDistSize)
 	
 	for (let i = 0; i < arrowCount; ++i)
 	{
@@ -377,15 +381,15 @@ drawRodForce = (rod) =>
 		if (rod.force > 0)
 		{
 			angle = 0
-			x = start.x + i * arrowDist
+			x = start.x + i * arrowDistSize
 		}
 		else
 		{
 			angle = Math.PI
-			x = end.x - i * arrowDist
+			x = end.x - i * arrowDistSize
 		}
 		
-		drawArrow(x, start.y, Math.abs(rod.force) * arrowLength, angle)
+		drawArrow(x, start.y, 1, angle)
 	}
 }
 
