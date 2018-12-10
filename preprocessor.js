@@ -11,7 +11,8 @@
 // commit 11: added node force drawing
 // commit 12: removed rod height
 // commit 13: improved arrow drawing
-// commit 14: added construction saving
+// commit 14: added construction file saving
+// commit 15: added construction file opening
 
 let defaultInput =
 `
@@ -77,6 +78,8 @@ $(document).ready(() =>
 {
     canvas = document.getElementById("canvas")
     ctx = canvas.getContext("2d")
+	
+	document.getElementById('open').addEventListener('change', handleFileSelect, false)
 
     $("#canvas").mousedown((e) => { handleMouseDown(e) })
     $("#canvas").mousemove((e) => { handleMouseMove(e) })
@@ -193,7 +196,7 @@ parseConstruction = (raw) =>
         node.y = 0
 
         node.permit = parseInt(getNextNumber())
-		node.force = parseFloat(getNextNumber())
+        node.force = parseFloat(getNextNumber())
 
         construction.nodes.push(node)
     }
@@ -207,8 +210,8 @@ parseConstruction = (raw) =>
         rod.endNode = parseInt(getNextNumber())
 
         rod.width = parseFloat(getNextNumber())
-		
-		rod.force = parseFloat(getNextNumber())
+        
+        rod.force = parseFloat(getNextNumber())
 
         construction.rods.push(rod)
     }
@@ -242,42 +245,42 @@ drawNode = (node) =>
 {
     let coords = getPointCanvasCoords(node)
     // ctx.fillRect(coords.x - nodeSize / 2, coords.y - nodeSize / 2, nodeSize, nodeSize)
-	
-	if (node.permit == 0)
-	{
-		for (let i = 0; i < permitStrokeCount; ++i)
-		{
-			let start = {
-				x: coords.x + (permitDx / 2),
-				y: coords.y - (permitSize / 2) + (permitSize / permitStrokeCount) * i * 2
-			}
-			
-			let end = {
-				x: start.x - permitDx,
-				y: start.y - permitDy
-			}
-			
-			ctx.beginPath()
-			ctx.moveTo(start.x, start.y)
-			ctx.lineTo(end.x, end.y)
-			ctx.stroke()
-		}
-	}
-	
-	drawNodeForce(node)
+    
+    if (node.permit == 0)
+    {
+        for (let i = 0; i < permitStrokeCount; ++i)
+        {
+            let start = {
+                x: coords.x + (permitDx / 2),
+                y: coords.y - (permitSize / 2) + (permitSize / permitStrokeCount) * i * 2
+            }
+            
+            let end = {
+                x: start.x - permitDx,
+                y: start.y - permitDy
+            }
+            
+            ctx.beginPath()
+            ctx.moveTo(start.x, start.y)
+            ctx.lineTo(end.x, end.y)
+            ctx.stroke()
+        }
+    }
+    
+    drawNodeForce(node)
 }
 
 drawNodeForce = (node) =>
 {
-	let coords = getPointCanvasCoords(node)
-	
-	if (Math.abs(node.force) < 0.001)
-	{
-		return
-	}
-	
-	let angle = node.force > 0 ? 0 : Math.PI
-	drawArrow(coords.x, coords.y, 1, angle)
+    let coords = getPointCanvasCoords(node)
+    
+    if (Math.abs(node.force) < 0.001)
+    {
+        return
+    }
+    
+    let angle = node.force > 0 ? 0 : Math.PI
+    drawArrow(coords.x, coords.y, 1, angle)
 }
 
 drawRod = (construction, rod) =>
@@ -321,41 +324,41 @@ drawRod = (construction, rod) =>
     ctx.lineTo(canvasPoint3.x, canvasPoint3.y)
     ctx.lineTo(canvasPoint0.x, canvasPoint0.y)
     ctx.stroke()
-	
-	drawRodForce(rod)
+    
+    drawRodForce(rod)
 }
 
 drawArrow = (x, y, length, angle) =>
 {
-	let size = arrowLength * camera.zoom * length
-	
-	let point0 = {
-		x: x,
-		y: y
-	}
-	
-	let point1 = {
-		x: point0.x + Math.cos(angle) * size,
-		y: point0.y + Math.sin(angle) * size
-	}
-	
-	let point2 = {
-		x: point1.x + Math.cos(angle + Math.PI - Math.PI / 6) * (size / 3),
-		y: point1.y + Math.sin(angle + Math.PI - Math.PI / 6) * (size / 3)
-	}
-	
-	let point3 = {
-		x: point1.x + Math.cos(angle + Math.PI + Math.PI / 6) * (size / 3),
-		y: point1.y + Math.sin(angle + Math.PI + Math.PI / 6) * (size / 3)
-	}
-	
-	ctx.beginPath()
+    let size = arrowLength * camera.zoom * length
+    
+    let point0 = {
+        x: x,
+        y: y
+    }
+    
+    let point1 = {
+        x: point0.x + Math.cos(angle) * size,
+        y: point0.y + Math.sin(angle) * size
+    }
+    
+    let point2 = {
+        x: point1.x + Math.cos(angle + Math.PI - Math.PI / 6) * (size / 3),
+        y: point1.y + Math.sin(angle + Math.PI - Math.PI / 6) * (size / 3)
+    }
+    
+    let point3 = {
+        x: point1.x + Math.cos(angle + Math.PI + Math.PI / 6) * (size / 3),
+        y: point1.y + Math.sin(angle + Math.PI + Math.PI / 6) * (size / 3)
+    }
+    
+    ctx.beginPath()
     ctx.moveTo(point0.x, point0.y)
     ctx.lineTo(point1.x, point1.y)
     ctx.lineTo(point2.x, point2.y)
     ctx.stroke()
-	
-	ctx.beginPath()
+    
+    ctx.beginPath()
     ctx.moveTo(point1.x, point1.y)
     ctx.lineTo(point3.x, point3.y)
     ctx.stroke()
@@ -363,35 +366,35 @@ drawArrow = (x, y, length, angle) =>
 
 drawRodForce = (rod) =>
 {
-	if (Math.abs(rod.force) < 0.001)
-	{
-		return
-	}
-	
-	let start = getPointCanvasCoords(construction.nodes[rod.startNode])
+    if (Math.abs(rod.force) < 0.001)
+    {
+        return
+    }
+    
+    let start = getPointCanvasCoords(construction.nodes[rod.startNode])
     let end = getPointCanvasCoords(construction.nodes[rod.endNode])
-	
-	let arrowDistSize = arrowDist * camera.zoom
-	let arrowCount = Math.floor(Math.abs(start.x - end.x) / arrowDistSize)
-	
-	for (let i = 0; i < arrowCount; ++i)
-	{
-		let angle = null
-		let x = null
-		
-		if (rod.force > 0)
-		{
-			angle = 0
-			x = start.x + i * arrowDistSize
-		}
-		else
-		{
-			angle = Math.PI
-			x = end.x - i * arrowDistSize
-		}
-		
-		drawArrow(x, start.y, 1, angle)
-	}
+    
+    let arrowDistSize = arrowDist * camera.zoom
+    let arrowCount = Math.floor(Math.abs(start.x - end.x) / arrowDistSize)
+    
+    for (let i = 0; i < arrowCount; ++i)
+    {
+        let angle = null
+        let x = null
+        
+        if (rod.force > 0)
+        {
+            angle = 0
+            x = start.x + i * arrowDistSize
+        }
+        else
+        {
+            angle = Math.PI
+            x = end.x - i * arrowDistSize
+        }
+        
+        drawArrow(x, start.y, 1, angle)
+    }
 }
 
 drawConstruction = (construction) =>
@@ -428,22 +431,22 @@ updateControls = (construction) =>
     {
         sel.append($("<option></option>").attr("value", value).text(key))
     })
-	
-	let spnp = $("#setPermitNodePosition")
+    
+    let spnp = $("#setPermitNodePosition")
     spnp.empty()
     $.each(nodes, (key, value) =>
     {
         spnp.append($("<option></option>").attr("value", value).text(key))
     })
-	
-	let sfnp = $("#setForceNodePosition")
+    
+    let sfnp = $("#setForceNodePosition")
     sfnp.empty()
     $.each(nodes, (key, value) =>
     {
         sfnp.append($("<option></option>").attr("value", value).text(key))
     })
-	
-	let rods = {}
+    
+    let rods = {}
     for (let i = 0; i < construction.rods.length; ++i)
     {
         rods["Rod " + i] = i
@@ -455,8 +458,8 @@ updateControls = (construction) =>
     {
         rrp.append($("<option></option>").attr("value", value).text(key))
     })
-	
-	let sfrp = $("#setForceRodPosition")
+    
+    let sfrp = $("#setForceRodPosition")
     sfrp.empty()
     $.each(rods, (key, value) =>
     {
@@ -506,58 +509,58 @@ addRod = () =>
 
 removeRod = () =>
 {
-	let position = parseInt($('#removeRodPosition').find(":selected").val())
-	
-	let length = construction.nodes[position + 1].x - construction.nodes[position].x
-	
-	for (let i = position + 1; i < construction.nodes.length; ++i)
+    let position = parseInt($('#removeRodPosition').find(":selected").val())
+    
+    let length = construction.nodes[position + 1].x - construction.nodes[position].x
+    
+    for (let i = position + 1; i < construction.nodes.length; ++i)
     {
         construction.nodes[i].x -= length
     }
-	
-	for (let i = position + 1; i < construction.rods.length; ++i)
+    
+    for (let i = position + 1; i < construction.rods.length; ++i)
     {
         construction.rods[i].startNode--
-		construction.rods[i].endNode--
+        construction.rods[i].endNode--
     }
-	
-	construction.nodes.splice(position, 1)
-	construction.rods.splice(position, 1)
-	
-	updateControls(construction)
+    
+    construction.nodes.splice(position, 1)
+    construction.rods.splice(position, 1)
+    
+    updateControls(construction)
     redraw()
 }
 
 setForce = () =>
 {
-	let position = parseInt($('#setForceRodPosition').find(":selected").val())
-	let force = parseFloat($("#forceX").val())
-	
-	construction.rods[position].force = force
-	
-	updateControls(construction)
+    let position = parseInt($('#setForceRodPosition').find(":selected").val())
+    let force = parseFloat($("#forceX").val())
+    
+    construction.rods[position].force = force
+    
+    updateControls(construction)
     redraw()
 }
 
 setPermit = () =>
 {
-	let position = parseInt($('#setPermitNodePosition').find(":selected").val())
-	let permitValue = parseInt($('#permitValue').find(":selected").val())
-	
-	construction.nodes[position].permit = permitValue
-	
-	updateControls(construction)
+    let position = parseInt($('#setPermitNodePosition').find(":selected").val())
+    let permitValue = parseInt($('#permitValue').find(":selected").val())
+    
+    construction.nodes[position].permit = permitValue
+    
+    updateControls(construction)
     redraw()
 }
 
 setNodeForce = () =>
 {
-	let position = parseInt($('#setForceNodePosition').find(":selected").val())
-	let force = parseFloat($("#forceNode").val())
-	
-	construction.nodes[position].force = force
-	
-	updateControls(construction)
+    let position = parseInt($('#setForceNodePosition').find(":selected").val())
+    let force = parseFloat($("#forceNode").val())
+    
+    construction.nodes[position].force = force
+    
+    updateControls(construction)
     redraw()
 }
 
@@ -583,6 +586,23 @@ function download(filename, text) {
 
 save = () =>
 {
-	let fileContents = JSON.stringify(construction)
-	download("construction.txt", fileContents)
+    let fileContents = JSON.stringify(construction)
+    download("construction.txt", fileContents)
+}
+
+handleFileSelect = (e) =>
+{
+    let file = e.target.files[0]
+
+    let reader = new FileReader()
+
+    reader.onload = (e) => {
+        var text = reader.result
+		construction = JSON.parse(text)
+		
+		updateControls(construction)
+		redraw()
+    }
+
+    reader.readAsText(file)
 }
