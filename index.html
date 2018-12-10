@@ -43,6 +43,13 @@
                     </select>
                     <button id="Set Permit" onclick="setPermit();">Set Permit</button>
                 </div>
+				<div class="setNodeForceControls">
+                    <select id="setForceNodePosition">
+                        <option value="nothing">Nothing</option>
+                    </select>
+					<input id="forceNode" placeholder="X">
+                    <button id="setNodeForce" onclick="setNodeForce();">Set Node Force</button>
+                </div>
                 <textarea readonly id="debugArea"></textarea>
                 <button id="debug" onclick="debug();">Debug</button>
             </div>

@@ -7,15 +7,16 @@
 // commit 7: added permit setting & finished removing y force
 // commit 8: added permit drawing
 // commit 9: fixed negative force drawing
+// commit 10: added node force setting
 
 let defaultInput =
 `
 
 3 2
 
-0 0
-0.5 0
-1 0
+0 0 0
+0.5 0 0
+1 0 1
 
 0 1 0.1 2 1
 1 2 0.2 1 0
@@ -26,8 +27,8 @@ let defaultInput =
 
 // nodeCount rodCount
 
-// node1x node1xPermit
-// node2x node2xPermit
+// node1x node1xPermit node1force
+// node2x node2xPermit node2force
 // ...
 
 // rod1startNode rod1endNode rod1width rod1height forceX1
@@ -188,6 +189,7 @@ parseConstruction = (raw) =>
         node.y = 0
 
         node.permit = parseInt(getNextNumber())
+		node.force = parseFloat(getNextNumber())
 
         construction.nodes.push(node)
     }
@@ -413,6 +415,13 @@ updateControls = (construction) =>
         spnp.append($("<option></option>").attr("value", value).text(key))
     })
 	
+	let sfnp = $("#setForceNodePosition")
+    sfnp.empty()
+    $.each(nodes, (key, value) =>
+    {
+        sfnp.append($("<option></option>").attr("value", value).text(key))
+    })
+	
 	let rods = {}
     for (let i = 0; i < construction.rods.length; ++i)
     {
@@ -517,6 +526,17 @@ setPermit = () =>
 	let permitValue = parseInt($('#permitValue').find(":selected").val())
 	
 	construction.nodes[position].permit = permitValue
+	
+	updateControls(construction)
+    redraw()
+}
+
+setNodeForce = () =>
+{
+	let position = parseInt($('#setForceRodPosition').find(":selected").val())
+	let force = parseFloat($("#forceNode").val())
+	
+	construction.nodes[position].force = force
 	
 	updateControls(construction)
     redraw()
