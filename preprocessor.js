@@ -1,3 +1,5 @@
+// commit 1: added rod removing
+
 let defaultInput =
 `
 
@@ -286,17 +288,30 @@ redraw = () =>
 
 updateControls = (construction) =>
 {
-    let options = {}
+    let nodes = {}
     for (let i = 0; i < construction.nodes.length; ++i)
     {
-        options["Node " + i] = i
+        nodes["Node " + i] = i
     }
     
     let sel = $("#rodPosition")
     sel.empty()
-    $.each(options, (key, value) =>
+    $.each(nodes, (key, value) =>
     {
         sel.append($("<option></option>").attr("value", value).text(key))
+    })
+	
+	let rods = {}
+    for (let i = 0; i < construction.rods.length; ++i)
+    {
+        rods["Rod " + i] = i
+    }
+    
+    let rrp = $("#removeRodPosition")
+    rrp.empty()
+    $.each(rods, (key, value) =>
+    {
+        rrp.append($("<option></option>").attr("value", value).text(key))
     })
 
     $("#debugArea").text(JSON.stringify(construction))
@@ -333,14 +348,38 @@ addRod = () =>
 
     for (let i = position; i < construction.rods.length; ++i)
     {
-        construction.rods[i].startNode += 1
-        construction.rods[i].endNode += 1
+        construction.rods[i].startNode++
+        construction.rods[i].endNode++
     }
 
     construction.nodes.splice(position, 0, node)
     construction.rods.splice(position, 0, rod)
 
     updateControls(construction)
+    redraw()
+}
+
+removeRod = () =>
+{
+	let position = parseInt($('#removeRodPosition').find(":selected").val())
+	
+	let length = construction.nodes[position + 1].x - construction.nodes[position].x
+	
+	for (let i = position + 1; i < construction.nodes.length; ++i)
+    {
+        construction.nodes[i].x -= length
+    }
+	
+	for (let i = position + 1; i < construction.rods.length; ++i)
+    {
+        construction.rods[i].startNode--
+		construction.rods[i].endNode--
+    }
+	
+	construction.nodes.splice(position, 1)
+	construction.rods.splice(position, 1)
+	
+	updateControls(construction)
     redraw()
 }
 

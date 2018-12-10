@@ -11,7 +11,7 @@
         <div class="main">
             <canvas id="canvas" width="600" height="500"></canvas>
             <div class="controls">
-                <div class="rodControls">
+                <div class="addRodControls">
                     <input id="rodLength" placeholder="Length">
                     <input id="rodWidth" placeholder="Width">
                     <input id="rodHeight" placeholder="Height">
@@ -19,6 +19,12 @@
                         <option value="nothing">Nothing</option>
                     </select>
                     <button id="addRod" onclick="addRod();">Add Rod</button>
+                </div>
+				<div class="removeRodControls">
+                    <select id="removeRodPosition">
+                        <option value="nothing">Nothing</option>
+                    </select>
+                    <button id="removeRod" onclick="removeRod();">Remove Rod</button>
                 </div>
                 <textarea readonly id="debugArea"></textarea>
                 <button id="debug" onclick="debug();">Debug</button>
