@@ -1,13 +1,14 @@
 // commit 1: added rod removing
+// commit 2: removed y z permits
 
 let defaultInput =
 `
 
 3 2
 
-0 0 0 0
-0.5 0 0 0
-1 0 0 0
+0 0
+0.5 0
+1 0
 
 0 1 0.1 2
 1 2 0.2 1
@@ -18,8 +19,8 @@ let defaultInput =
 
 // nodeCount rodCount
 
-// node1x node1xPermit node1yPermit node1zPermit
-// node2x node2xPermit node2yPermit node2zPermit
+// node1x node1xPermit
+// node2x node2xPermit
 // ...
 
 // rod1startNode rod1endNode rod1width rod1height
@@ -171,9 +172,7 @@ parseConstruction = (raw) =>
         node.x = parseFloat(getNextNumber())
         node.y = 0
 
-        node.xPermit = parseInt(getNextNumber())
-        node.yPermit = parseInt(getNextNumber())
-        node.zPermit = parseInt(getNextNumber())
+        node.permit = parseInt(getNextNumber())
 
         construction.nodes.push(node)
     }
@@ -329,9 +328,7 @@ addRod = () =>
     node.x = construction.nodes[position].x
     node.y = 0
 
-    node.xPermit = 0
-    node.yPermit = 0
-    node.zPermit = 0
+    node.permit = 0
 
     let rod = {}
 
