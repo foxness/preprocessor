@@ -6,6 +6,7 @@
 // commit 6: removed y force
 // commit 7: added permit setting & finished removing y force
 // commit 8: added permit drawing
+// commit 9: fixed negative force drawing
 
 let defaultInput =
 `
@@ -340,7 +341,7 @@ drawArrow = (x, y, length, angle) =>
 
 drawRodForce = (rod) =>
 {
-	if (rod.force < 0.001)
+	if (Math.abs(rod.force) < 0.001)
 	{
 		return
 	}
@@ -352,8 +353,21 @@ drawRodForce = (rod) =>
 	
 	for (let i = 0; i < arrowCount; ++i)
 	{
-		let angle = rod.force > 0 ? 0 : Math.PI
-		drawArrow(start.x + i * arrowDist, start.y, rod.force * arrowLength, angle)
+		let angle = null
+		let x = null
+		
+		if (rod.force > 0)
+		{
+			angle = 0
+			x = start.x + i * arrowDist
+		}
+		else
+		{
+			angle = Math.PI
+			x = end.x - i * arrowDist
+		}
+		
+		drawArrow(x, start.y, Math.abs(rod.force) * arrowLength, angle)
 	}
 }
 
