@@ -26,6 +26,14 @@
                     </select>
                     <button id="removeRod" onclick="removeRod();">Remove Rod</button>
                 </div>
+				<div class="setForceControls">
+                    <select id="setForceRodPosition">
+                        <option value="nothing">Nothing</option>
+                    </select>
+					<input id="forceX" placeholder="X">
+                    <input id="forceY" placeholder="Y">
+                    <button id="Set Force" onclick="setForce();">Set Force</button>
+                </div>
                 <textarea readonly id="debugArea"></textarea>
                 <button id="debug" onclick="debug();">Debug</button>
             </div>

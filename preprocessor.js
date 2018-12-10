@@ -1,5 +1,6 @@
 // commit 1: added rod removing
 // commit 2: removed y z permits
+// commit 3: added force setting
 
 let defaultInput =
 `
@@ -10,8 +11,8 @@ let defaultInput =
 0.5 0
 1 0
 
-0 1 0.1 2
-1 2 0.2 1
+0 1 0.1 2 1 0
+1 2 0.2 1 0 1
 
 ` 
 
@@ -23,8 +24,8 @@ let defaultInput =
 // node2x node2xPermit
 // ...
 
-// rod1startNode rod1endNode rod1width rod1height
-// rod2startNode rod2endNode rod2width rod2height
+// rod1startNode rod1endNode rod1width rod1height forceX1 forceY1
+// rod2startNode rod2endNode rod2width rod2height forceX2 forceY2
 // ...
 
 // ` 
@@ -187,6 +188,9 @@ parseConstruction = (raw) =>
 
         rod.width = parseFloat(getNextNumber())
         rod.height = parseFloat(getNextNumber())
+		
+		rod.forceX = parseFloat(getNextNumber())
+        rod.forceY = parseFloat(getNextNumber())
 
         construction.rods.push(rod)
     }
@@ -312,6 +316,13 @@ updateControls = (construction) =>
     {
         rrp.append($("<option></option>").attr("value", value).text(key))
     })
+	
+	let sfrp = $("#setForceRodPosition")
+    sfrp.empty()
+    $.each(rods, (key, value) =>
+    {
+        sfrp.append($("<option></option>").attr("value", value).text(key))
+    })
 
     $("#debugArea").text(JSON.stringify(construction))
 }
@@ -375,6 +386,19 @@ removeRod = () =>
 	
 	construction.nodes.splice(position, 1)
 	construction.rods.splice(position, 1)
+	
+	updateControls(construction)
+    redraw()
+}
+
+setForce = () =>
+{
+	let position = parseInt($('#setForceRodPosition').find(":selected").val())
+	let forceX = parseFloat($("#forceX").val())
+	let forceY = parseFloat($("#forceY").val())
+	
+	construction.rods[position].forceX = forceX
+	construction.rods[position].forceY = forceY
 	
 	updateControls(construction)
     redraw()
