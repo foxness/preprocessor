@@ -1,6 +1,7 @@
 // commit 1: added rod removing
 // commit 2: removed y z permits
 // commit 3: added force setting
+// commit 4: added arrow drawing
 
 let defaultInput =
 `
@@ -269,6 +270,40 @@ drawRod = (construction, rod) =>
     ctx.stroke()
 }
 
+drawArrow = (x, y, length, angle) =>
+{
+	let point0 = {
+		x: x,
+		y: y
+	}
+	
+	let point1 = {
+		x: point0.x + Math.cos(angle) * length,
+		y: point0.y + Math.sin(angle) * length
+	}
+	
+	let point2 = {
+		x: point1.x + Math.cos(angle + Math.PI - Math.PI / 6) * (length / 3),
+		y: point1.y + Math.sin(angle + Math.PI - Math.PI / 6) * (length / 3)
+	}
+	
+	let point3 = {
+		x: point1.x + Math.cos(angle + Math.PI + Math.PI / 6) * (length / 3),
+		y: point1.y + Math.sin(angle + Math.PI + Math.PI / 6) * (length / 3)
+	}
+	
+	ctx.beginPath()
+    ctx.moveTo(point0.x, point0.y)
+    ctx.lineTo(point1.x, point1.y)
+    ctx.lineTo(point2.x, point2.y)
+    ctx.stroke()
+	
+	ctx.beginPath()
+    ctx.moveTo(point1.x, point1.y)
+    ctx.lineTo(point3.x, point3.y)
+    ctx.stroke()
+}
+
 drawConstruction = (construction) =>
 {
     ctx.fillStyle = "#ffffff"
@@ -276,6 +311,8 @@ drawConstruction = (construction) =>
 
     construction.nodes.forEach(node => drawNode(node))
     construction.rods.forEach(rod => drawRod(construction, rod))
+	
+	drawArrow(30, 30, 30, 0)
 }
 
 clearCanvas = () =>
