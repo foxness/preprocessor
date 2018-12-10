@@ -8,6 +8,7 @@
 // commit 8: added permit drawing
 // commit 9: fixed negative force drawing
 // commit 10: added node force setting
+// commit 11: added node force drawing
 
 let defaultInput =
 `
@@ -260,6 +261,21 @@ drawNode = (node) =>
 			ctx.stroke()
 		}
 	}
+	
+	drawNodeForce(node)
+}
+
+drawNodeForce = (node) =>
+{
+	let coords = getPointCanvasCoords(node)
+	
+	if (Math.abs(node.force) < 0.001)
+	{
+		return
+	}
+	
+	let angle = node.force > 0 ? 0 : Math.PI
+	drawArrow(coords.x, coords.y, Math.abs(node.force) * arrowLength, angle)
 }
 
 drawRod = (construction, rod) =>
@@ -533,7 +549,7 @@ setPermit = () =>
 
 setNodeForce = () =>
 {
-	let position = parseInt($('#setForceRodPosition').find(":selected").val())
+	let position = parseInt($('#setForceNodePosition').find(":selected").val())
 	let force = parseFloat($("#forceNode").val())
 	
 	construction.nodes[position].force = force
