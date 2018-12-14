@@ -20,8 +20,8 @@ let defaultInput =
 // node2x node2xPermit node2force
 // ...
 
-// rod1startNode rod1endNode rod1width forceX1 elastic1
-// rod2startNode rod2endNode rod2width forceX2 elastic2
+// rod1startNode rod1endNode rod1area forceX1 elastic1
+// rod2startNode rod2endNode rod2area forceX2 elastic2
 // ...
 
 // ` 
@@ -129,9 +129,6 @@ handleMouseUp = (e) =>
 {
     if (dragging)
     {
-        let mx = e.clientX - canvasOffsetX
-        let my = e.clientY - canvasOffsetY
-
         camera.x -= offsetDragX
         camera.y -= offsetDragY
 
@@ -193,7 +190,7 @@ parseConstruction = (raw) =>
         rod.startNode = parseInt(getNextNumber())
         rod.endNode = parseInt(getNextNumber())
 
-        rod.width = parseFloat(getNextNumber())
+        rod.area = parseFloat(getNextNumber())
         rod.force = parseFloat(getNextNumber())
         rod.elastic = parseFloat(getNextNumber())
 
@@ -277,23 +274,23 @@ drawRod = (construction, rod) =>
     let angle = Math.atan2(vy, vx)
 
     let point0 = {
-        x: start.x + Math.cos(angle + Math.PI / 2) * rod.width / 2,
-        y: start.y + Math.sin(angle + Math.PI / 2) * rod.width / 2
+        x: start.x + Math.cos(angle + Math.PI / 2) * rod.area / 2,
+        y: start.y + Math.sin(angle + Math.PI / 2) * rod.area / 2
     }
 
     let point1 = {
-        x: start.x + Math.cos(angle - Math.PI / 2) * rod.width / 2,
-        y: start.y + Math.sin(angle - Math.PI / 2) * rod.width / 2
+        x: start.x + Math.cos(angle - Math.PI / 2) * rod.area / 2,
+        y: start.y + Math.sin(angle - Math.PI / 2) * rod.area / 2
     }
 
     let point2 = {
-        x: end.x + Math.cos(angle - Math.PI / 2) * rod.width / 2,
-        y: end.y + Math.sin(angle - Math.PI / 2) * rod.width / 2
+        x: end.x + Math.cos(angle - Math.PI / 2) * rod.area / 2,
+        y: end.y + Math.sin(angle - Math.PI / 2) * rod.area / 2
     }
 
     let point3 = {
-        x: end.x + Math.cos(angle + Math.PI / 2) * rod.width / 2,
-        y: end.y + Math.sin(angle + Math.PI / 2) * rod.width / 2
+        x: end.x + Math.cos(angle + Math.PI / 2) * rod.area / 2,
+        y: end.y + Math.sin(angle + Math.PI / 2) * rod.area / 2
     }
     
     let canvasPoint0 = getPointCanvasCoords(point0)
@@ -456,7 +453,7 @@ updateControls = (construction) =>
 addRod = () =>
 {
     let length = parseFloat($("#rodLength").val())
-    let width = parseFloat($("#rodWidth").val())
+    let area = parseFloat($("#rodArea").val())
     let elastic = parseFloat($("#rodElastic").val())
     let position = parseInt($('#rodPosition').find(":selected").val())
 
@@ -472,7 +469,7 @@ addRod = () =>
     rod.startNode = position
     rod.endNode = position + 1
 
-    rod.width = width
+    rod.area = area
     rod.elastic = elastic
 
     for (let i = position; i < construction.nodes.length; ++i)
