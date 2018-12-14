@@ -629,9 +629,64 @@ getInitialVariables = () =>
     }
 }
 
+getEquationVariables = (K, Q) =>
+{
+    let aSize = construction.nodes.length
+    let A = []
+    for (let y = 0; y < aSize; ++y)
+    {
+        let a = []
+        for (let x = 0; x < aSize; ++x)
+        {
+            a.push(0)
+        }
+        A.push(a)
+    }
+
+    for (let i = 0; i < aSize; ++i)
+    {
+        let k1i = i - 1
+        let k2i = i
+
+        let k1 = k1i >= 0 && k1i < K.length ? K[k1i][1][1] : 0
+        let k2 = k2i >= 0 && k2i < K.length ? K[k2i][0][0] : 0
+
+        A[i][i] = k1 + k2
+    }
+
+    for (let i = 0; i < aSize - 1; ++i)
+    {
+        A[i][i + 1] = K[i][0][1]
+        A[i + 1][i] = K[i][1][0]
+    }
+
+    let leftForbidden = construction.nodes[0].permit == 0
+    let rightForbidden = construction.nodes[construction.nodes.length - 1].permit == 0
+
+    if (leftForbidden)
+    {
+        A[0][0] = 1
+        A[0][1] = 0
+        A[1][0] = 0
+    }
+
+    if (rightForbidden)
+    {
+        A[aSize - 1][aSize - 1] = 1
+        A[aSize - 2][aSize - 1] = 0
+        A[aSize - 1][aSize - 2] = 0
+    }
+
+    return {
+        A: A,
+    }
+}
+
 process = () =>
 {
-    let v = getInitialVariables()
-    console.log(v.K)
-    console.log(v.Q)
+    let iv = getInitialVariables()
+    let ev = getEquationVariables(iv.K, iv.Q)
+
+    console.log(ev.A)
+    // console.log(ev.B)
 }
