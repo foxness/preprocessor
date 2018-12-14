@@ -387,7 +387,7 @@ drawUpc = () =>
     let startX = construction.nodes[0].x
     let endX = construction.nodes[construction.nodes.length - 1].x
     
-    for (let i = 0; startX + (i - 1) * graphDx < endX; ++i)
+    for (let i = 0; startX + i * graphDx < endX; ++i)
     {
         let x1 = startX + i * graphDx
         let x2 = startX + (i + 1) * graphDx
@@ -415,7 +415,7 @@ drawNpc = () =>
     let startX = construction.nodes[0].x
     let endX = construction.nodes[construction.nodes.length - 1].x
     
-    for (let i = 0; startX + (i - 1) * graphDx < endX; ++i)
+    for (let i = 0; startX + i * graphDx < endX; ++i)
     {
         let x1 = startX + i * graphDx
         let x2 = startX + (i + 1) * graphDx
