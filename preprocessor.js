@@ -1,5 +1,4 @@
 // todo:
-// add processor
 // add postprocessor
 // remove startNode, endNode
 // add clear button
@@ -85,7 +84,7 @@ $(document).ready(() =>
     canvasOffsetY = offset.top
 
     construction = parseConstruction(defaultInput.trim())
-    updateControls(construction)
+    updateControls()
     redraw()
 })
 
@@ -209,20 +208,6 @@ parseConstruction = (raw) =>
     return construction
 }
 
-// getConstructionParams = (construction) =>
-// {
-//     let xMin = Math.min(...construction.nodes.map(a => a.x))
-//     let xMax = Math.max(...construction.nodes.map(a => a.x))
-
-//     let xSize = xMax - xMin
-
-//     return {
-//         xMin: xMin,
-//         xMax: xMax,
-//         xSize: xSize,
-//     }
-// }
-
 getPointCanvasCoords = (point) =>
 {
     let x = (point.x * camera.zoom) - camera.x + offsetDragX
@@ -234,7 +219,6 @@ getPointCanvasCoords = (point) =>
 drawNode = (node) =>
 {
     let coords = getPointCanvasCoords(node)
-    // ctx.fillRect(coords.x - nodeSize / 2, coords.y - nodeSize / 2, nodeSize, nodeSize)
     
     if (node.permit == 0)
     {
@@ -273,7 +257,7 @@ drawNodeForce = (node) =>
     drawArrow(coords.x, coords.y, 1, angle)
 }
 
-drawRod = (construction, rod) =>
+drawRod = (rod) =>
 {
     let start = construction.nodes[rod.startNode]
     let end = construction.nodes[rod.endNode]
@@ -387,13 +371,13 @@ drawRodForce = (rod) =>
     }
 }
 
-drawConstruction = (construction) =>
+drawConstruction = () =>
 {
     ctx.fillStyle = "#ffffff"
     ctx.strokeStyle = "#ffffff"
 
     construction.nodes.forEach(node => drawNode(node))
-    construction.rods.forEach(rod => drawRod(construction, rod))
+    construction.rods.forEach(rod => drawRod(rod))
 }
 
 clearCanvas = () =>
@@ -404,10 +388,10 @@ clearCanvas = () =>
 redraw = () =>
 {
     clearCanvas()
-    drawConstruction(construction)
+    drawConstruction()
 }
 
-updateControls = (construction) =>
+updateControls = () =>
 {
     let nodes = {}
     for (let i = 0; i < construction.nodes.length; ++i)
