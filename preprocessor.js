@@ -709,7 +709,6 @@ process = () =>
 {
     let iv = getInitialVariables()
     let ev = getEquationVariables(iv.K, iv.Q)
-
-    console.log(ev.A)
-    console.log(ev.B)
+    let delta = math.lusolve(ev.A, ev.B)
+    console.log(delta)
 }
