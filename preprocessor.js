@@ -73,6 +73,7 @@ let offsetDragY = 0
 let graphDx = 0.1
 let defaultY = 0
 
+let outdated = true
 let upc = null
 let npc = null
 
@@ -93,11 +94,13 @@ $(document).ready(() =>
 
     $('#leftSupport').change(() => {
         construction.leftSupport = $('#leftSupport').prop('checked')
+        outdated = true
         update()
     })
 
     $('#rightSupport').change(() => {
         construction.rightSupport = $('#rightSupport').prop('checked')
+        outdated = true
         update()
     })
 
@@ -478,14 +481,11 @@ drawConstruction = () =>
 
     drawSupports()
 
-    if (upc != null)
+    if (!outdated)
     {
         ctx.strokeStyle = upcColor
         drawUpc()
-    }
 
-    if (npc != null)
-    {
         ctx.strokeStyle = npcColor
         drawNpc()
     }
@@ -583,6 +583,7 @@ addRod = () =>
     construction.nodes.splice(position, 0, node)
     construction.rods.splice(position, 0, rod)
 
+    outdated = true
     update()
 }
 
@@ -599,6 +600,7 @@ removeRod = () =>
     construction.nodes.splice(position, 1)
     construction.rods.splice(position, 1)
     
+    outdated = true
     update()
 }
 
@@ -609,6 +611,7 @@ setForce = () =>
     
     construction.rods[position].force = force
     
+    outdated = true
     update()
 }
 
@@ -619,6 +622,7 @@ setNodeForce = () =>
     
     construction.nodes[position].force = force
     
+    outdated = true
     update()
 }
 
@@ -657,7 +661,8 @@ handleFileSelect = (e) =>
     reader.onload = (e) => {
         var text = reader.result
 		construction = JSON.parse(text)
-		
+        
+        outdated = true
 		update()
     }
 
@@ -863,5 +868,6 @@ process = () =>
     let U = deltaToU(delta)
     upc = uToUpc(U)
     npc = uToNpc(U)
+    outdated = false
     redraw()
 }
