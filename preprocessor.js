@@ -482,8 +482,7 @@ addRod = () =>
 removeRod = () =>
 {
     let position = parseInt($('#removeRodPosition').find(":selected").val())
-    
-    let length = construction.nodes[position + 1].x - construction.nodes[position].x
+    let length = lengthOf(position)
     
     for (let i = position + 1; i < construction.nodes.length; ++i)
     {
@@ -583,7 +582,7 @@ getInitialVariables = () =>
     for (let i = 0; i < construction.rods.length; ++i)
     {
         let rod = construction.rods[i]
-        let length = construction.nodes[i + 1].x - construction.nodes[i].x
+        let length = lengthOf(i)
 
         let eal = rod.elastic * rod.area / length
         let k = [
@@ -679,10 +678,63 @@ getEquationVariables = (K, Q) =>
     }
 }
 
+deltaToU = (delta) =>
+{
+    let U = []
+    for (let i = 0; i < construction.rods.length; ++i)
+    {
+        U.push([delta[i], delta[i + 1]])
+    }
+    return U
+}
+
+lengthOf = (rodIndex) =>
+{
+    return construction.nodes[rodIndex + 1].x - construction.nodes[rodIndex].x
+}
+
+uToUp = (U) =>
+{
+    let up = []
+    for (let i = 0; i < construction.rods.length; ++i)
+    {
+        let rod = construction.rods[i]
+
+        let u = (x) =>
+        {
+            let a = U[i][0]
+            let b = (x / lengthOf(i)) * (U[i][1] - U[i][0])
+            let c = ((rod.force * lengthOf(i) * x) / (2 * rod.elastic * rod.area)) * (1 - x / lengthOf(i))
+            return a + b + c
+        }
+
+        up.push(u)
+    }
+
+    let upContinuous = (x) =>
+    {
+        for (let i = 0; i < construction.rods.length; ++i)
+        {
+            let start = construction.nodes[i].x
+            let end = construction.nodes[i + 1].x
+
+            if (start <= x && x <= end)
+            {
+                return up[i](x - start)
+            }
+        }
+
+        return null
+    }
+
+    return upContinuous
+}
+
 process = () =>
 {
     let iv = getInitialVariables()
     let ev = getEquationVariables(iv.K, iv.Q)
     let delta = solve(ev.A, ev.B)
+    let U = deltaToU(delta)
     console.log(delta)
 }
