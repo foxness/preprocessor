@@ -45,10 +45,10 @@ let nodeSize = 5
 let arrowDist = 0.4
 let arrowLength = 0.3
 
-let permitStrokeCount = 4
-let permitSize = 30
-let permitDx = 10
-let permitDy = 10
+let supportStrokeCount = 4
+let supportSize = 30
+let supportDx = 10
+let supportDy = 10
 
 let canvas = null
 let ctx = null
@@ -233,16 +233,16 @@ drawSupports = () =>
     {
         let coords = getPointCanvasCoords(construction.nodes[s])
 
-        for (let i = 0; i < permitStrokeCount; ++i)
+        for (let i = 0; i < supportStrokeCount; ++i)
         {
             let start = {
-                x: coords.x + (permitDx / 2),
-                y: coords.y - (permitSize / 2) + (permitSize / permitStrokeCount) * i * 2
+                x: coords.x + (supportDx / 2),
+                y: coords.y - (supportSize / 2) + (supportSize / supportStrokeCount) * i * 2
             }
             
             let end = {
-                x: start.x - permitDx,
-                y: start.y - permitDy
+                x: start.x - supportDx,
+                y: start.y - supportDy
             }
             
             ctx.beginPath()
@@ -497,13 +497,6 @@ updateControls = () =>
         sel.append($("<option></option>").attr("value", value).text(key))
     })
     
-    let spnp = $("#setPermitNodePosition")
-    spnp.empty()
-    $.each(nodes, (key, value) =>
-    {
-        spnp.append($("<option></option>").attr("value", value).text(key))
-    })
-    
     let sfnp = $("#setForceNodePosition")
     sfnp.empty()
     $.each(nodes, (key, value) =>
@@ -545,7 +538,6 @@ addRod = () =>
 
     node.x = construction.nodes[position].x
     node.y = defaultY
-    node.permit = 1
     node.force = 0
 
     let rod = {}
@@ -588,17 +580,6 @@ setForce = () =>
     let force = parseFloat($("#forceX").val())
     
     construction.rods[position].force = force
-    
-    updateControls()
-    redraw()
-}
-
-setPermit = () =>
-{
-    let position = parseInt($('#setPermitNodePosition').find(":selected").val())
-    let permitValue = parseInt($('#permitValue').find(":selected").val())
-    
-    construction.nodes[position].permit = permitValue
     
     updateControls()
     redraw()
