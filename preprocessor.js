@@ -37,7 +37,7 @@ let defaultInput =
 
 let constructionColor = "#ffffff"
 let upcColor = "#00ff00"
-let npcColor = "#00ffff"
+let npcColor = "#ff00ff"
 
 let constructionPercentage = 0.7
 let nodeSize = 5
@@ -92,13 +92,22 @@ $(document).ready(() =>
     $("#canvas").mouseleave(() => { handleMouseLeave() })
     $("#canvas").on('DOMMouseScroll mousewheel', (e) => { handleMouseWheel(e) })
 
+    $('#leftSupport').change(() => {
+        construction.leftSupport = $('#leftSupport').prop('checked')
+        update()
+    })
+
+    $('#rightSupport').change(() => {
+        construction.rightSupport = $('#rightSupport').prop('checked')
+        update()
+    })
+
     let offset = $("#canvas").offset()
     canvasOffsetX = offset.left
     canvasOffsetY = offset.top
 
     construction = parseConstruction(defaultInput.trim())
-    updateControls()
-    redraw()
+    update()
 })
 
 handleMouseWheel = (e) =>
@@ -229,28 +238,40 @@ getPointCanvasCoords = (point) =>
 
 drawSupports = () =>
 {
-    for (let s = 0; s <= construction.nodes.length; s += construction.nodes.length - 1)
-    {
-        let coords = getPointCanvasCoords(construction.nodes[s])
+    let indices = []
 
-        for (let i = 0; i < supportStrokeCount; ++i)
-        {
-            let start = {
-                x: coords.x + (supportDx / 2),
-                y: coords.y - (supportSize / 2) + (supportSize / supportStrokeCount) * i * 2
-            }
-            
-            let end = {
-                x: start.x - supportDx,
-                y: start.y - supportDy
-            }
-            
-            ctx.beginPath()
-            ctx.moveTo(start.x, start.y)
-            ctx.lineTo(end.x, end.y)
-            ctx.stroke()
-        }
+    if (construction.leftSupport)
+    {
+        indices.push(0)
     }
+
+    if (construction.rightSupport)
+    {
+        indices.push(construction.nodes.length - 1)
+    }
+
+    indices.forEach(s =>
+        {
+            let coords = getPointCanvasCoords(construction.nodes[s])
+
+            for (let i = 0; i < supportStrokeCount; ++i)
+            {
+                let start = {
+                    x: coords.x + (supportDx / 2),
+                    y: coords.y - (supportSize / 2) + (supportSize / supportStrokeCount) * i * 2
+                }
+                
+                let end = {
+                    x: start.x - supportDx,
+                    y: start.y - supportDy
+                }
+                
+                ctx.beginPath()
+                ctx.moveTo(start.x, start.y)
+                ctx.lineTo(end.x, end.y)
+                ctx.stroke()
+            }
+        })
 }
 
 drawNode = (node) =>
@@ -524,7 +545,16 @@ updateControls = () =>
         sfrp.append($("<option></option>").attr("value", value).text(key))
     })
 
+    $('#leftSupport').prop('checked', construction.leftSupport)
+    $('#rightSupport').prop('checked', construction.rightSupport)
+
     $("#debugArea").text(JSON.stringify(construction))
+}
+
+update = () =>
+{
+    updateControls()
+    redraw()
 }
 
 addRod = () =>
@@ -553,8 +583,7 @@ addRod = () =>
     construction.nodes.splice(position, 0, node)
     construction.rods.splice(position, 0, rod)
 
-    updateControls()
-    redraw()
+    update()
 }
 
 removeRod = () =>
@@ -570,8 +599,7 @@ removeRod = () =>
     construction.nodes.splice(position, 1)
     construction.rods.splice(position, 1)
     
-    updateControls()
-    redraw()
+    update()
 }
 
 setForce = () =>
@@ -581,8 +609,7 @@ setForce = () =>
     
     construction.rods[position].force = force
     
-    updateControls()
-    redraw()
+    update()
 }
 
 setNodeForce = () =>
@@ -592,8 +619,7 @@ setNodeForce = () =>
     
     construction.nodes[position].force = force
     
-    updateControls()
-    redraw()
+    update()
 }
 
 debug = () =>
@@ -632,8 +658,7 @@ handleFileSelect = (e) =>
         var text = reader.result
 		construction = JSON.parse(text)
 		
-		updateControls(construction)
-		redraw()
+		update()
     }
 
     reader.readAsText(file)
