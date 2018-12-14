@@ -598,3 +598,40 @@ handleFileSelect = (e) =>
 
     reader.readAsText(file)
 }
+
+// PROCESSOR ---------------------------------------------------------------------
+
+getInitialVariables = () =>
+{
+    let K = []
+    let Q = []
+
+    for (let i = 0; i < construction.rods.length; ++i)
+    {
+        let rod = construction.rods[i]
+        let length = construction.nodes[i + 1].x - construction.nodes[i].x
+
+        let eal = rod.elastic * rod.area / length
+        let k = [
+            [eal, -eal],
+            [-eal, eal]
+        ]
+        K.push(k)
+
+        let ql = -rod.force * length / 2
+        let q = [ql, ql]
+        Q.push(q)
+    }
+    
+    return {
+        K: K,
+        Q: Q
+    }
+}
+
+process = () =>
+{
+    let v = getInitialVariables()
+    console.log(v.K)
+    console.log(v.Q)
+}
