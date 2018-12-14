@@ -677,8 +677,31 @@ getEquationVariables = (K, Q) =>
         A[aSize - 1][aSize - 2] = 0
     }
 
+    let bSize = aSize
+    let B = []
+    for (let i = 0; i < bSize; ++i)
+    {
+        let q1i = i - 1
+        let q2i = i
+        let q1 = q1i >= 0 && q1i < Q.length ? Q[q1i][1] : 0
+        let q2 = q2i >= 0 && q2i < Q.length ? Q[q2i][0] : 0
+        let f = construction.nodes[i].force
+        B.push(q1 + q2 + f)
+    }
+
+    if (leftForbidden)
+    {
+        B[0] = 0
+    }
+
+    if (rightForbidden)
+    {
+        B[B.length - 1] = 0
+    }
+
     return {
         A: A,
+        B: B
     }
 }
 
@@ -688,5 +711,5 @@ process = () =>
     let ev = getEquationVariables(iv.K, iv.Q)
 
     console.log(ev.A)
-    // console.log(ev.B)
+    console.log(ev.B)
 }
