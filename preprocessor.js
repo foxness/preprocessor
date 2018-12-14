@@ -34,7 +34,8 @@ let defaultInput =
 // ` 
 
 let constructionColor = "#ffffff"
-let graphColor = "#00ff00"
+let upcColor = "#00ff00"
+let npcColor = "#00ffff"
 
 let constructionPercentage = 0.7
 let nodeSize = 5
@@ -68,11 +69,11 @@ let startDragY = null
 let offsetDragX = 0
 let offsetDragY = 0
 
-let upcDx = 0.1
+let graphDx = 0.1
 let defaultY = 0
 
 let upc = null
-let upcValues = null
+let npc = null
 
 let solve = math.lusolve
 
@@ -386,13 +387,41 @@ drawUpc = () =>
     let startX = construction.nodes[0].x
     let endX = construction.nodes[construction.nodes.length - 1].x
     
-    for (let i = 0; startX + (i - 1) * upcDx < endX; ++i)
+    for (let i = 0; startX + (i - 1) * graphDx < endX; ++i)
     {
-        let x1 = startX + i * upcDx
-        let x2 = startX + (i + 1) * upcDx
+        let x1 = startX + i * graphDx
+        let x2 = startX + (i + 1) * graphDx
         
         let y1 = defaultY - upc(x1)
         let y2 = defaultY - upc(x2)
+
+        let coords1func = getPointCanvasCoords({ x: x1, y: y1 })
+        let coords2func = getPointCanvasCoords({ x: x2, y: y2 })
+        let coords1floor = getPointCanvasCoords({ x: x1, y: defaultY })
+        let coords2floor = getPointCanvasCoords({ x: x2, y: defaultY })
+
+        ctx.beginPath()
+        ctx.moveTo(coords1floor.x, coords1floor.y)
+        ctx.lineTo(coords1func.x, coords1func.y)
+        ctx.lineTo(coords2func.x, coords2func.y)
+        ctx.lineTo(coords2floor.x, coords2floor.y)
+        ctx.lineTo(coords1floor.x, coords1floor.y)
+        ctx.stroke()
+    }
+}
+
+drawNpc = () =>
+{
+    let startX = construction.nodes[0].x
+    let endX = construction.nodes[construction.nodes.length - 1].x
+    
+    for (let i = 0; startX + (i - 1) * graphDx < endX; ++i)
+    {
+        let x1 = startX + i * graphDx
+        let x2 = startX + (i + 1) * graphDx
+        
+        let y1 = defaultY - npc(x1)
+        let y2 = defaultY - npc(x2)
 
         let coords1func = getPointCanvasCoords({ x: x1, y: y1 })
         let coords2func = getPointCanvasCoords({ x: x2, y: y2 })
@@ -422,8 +451,14 @@ drawConstruction = () =>
 
     if (upc != null)
     {
-        ctx.strokeStyle = graphColor
+        ctx.strokeStyle = upcColor
         drawUpc()
+    }
+
+    if (npc != null)
+    {
+        ctx.strokeStyle = npcColor
+        drawNpc()
     }
 }
 
@@ -772,6 +807,42 @@ uToUpc = (U) =>
     return upContinuous
 }
 
+uToNpc = (U) =>
+{
+    let np = []
+    for (let i = 0; i < construction.rods.length; ++i)
+    {
+        let rod = construction.rods[i]
+
+        let n = (x) =>
+        {
+            let a = (rod.elastic * rod.area / lengthOf(i)) * (U[i][1] - U[i][0])
+            let b = (rod.force * lengthOf(i) / 2) * (1 - 2 * x / lengthOf(i))
+            return a + b
+        }
+
+        np.push(n)
+    }
+
+    let npc = (x) =>
+    {
+        for (let i = 0; i < construction.rods.length; ++i)
+        {
+            let start = construction.nodes[i].x
+            let end = construction.nodes[i + 1].x
+
+            if (start <= x && x <= end)
+            {
+                return np[i](x - start)
+            }
+        }
+
+        return null
+    }
+
+    return npc
+}
+
 process = () =>
 {
     let iv = getInitialVariables()
@@ -779,5 +850,6 @@ process = () =>
     let delta = solve(ev.A, ev.B)
     let U = deltaToU(delta)
     upc = uToUpc(U)
+    npc = uToNpc(U)
     redraw()
 }
