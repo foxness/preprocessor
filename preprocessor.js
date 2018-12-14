@@ -33,6 +33,9 @@ let defaultInput =
 
 // ` 
 
+let constructionColor = "#ffffff"
+let graphColor = "#00ff00"
+
 let constructionPercentage = 0.7
 let nodeSize = 5
 
@@ -64,6 +67,12 @@ let startDragX = null
 let startDragY = null
 let offsetDragX = 0
 let offsetDragY = 0
+
+let upcDx = 0.1
+let defaultY = 0
+
+let upc = null
+let upcValues = null
 
 let solve = math.lusolve
 
@@ -183,7 +192,7 @@ parseConstruction = (raw) =>
         let node = {}
 
         node.x = parseFloat(getNextNumber())
-        node.y = 0
+        node.y = defaultY
 
         node.permit = parseInt(getNextNumber())
         node.force = parseFloat(getNextNumber())
@@ -372,16 +381,49 @@ drawRodForce = (rodIndex) =>
     }
 }
 
+drawUpc = () =>
+{
+    let startX = construction.nodes[0].x
+    let endX = construction.nodes[construction.nodes.length - 1].x
+    
+    for (let i = 0; startX + (i - 1) * upcDx < endX; ++i)
+    {
+        let x1 = startX + i * upcDx
+        let x2 = startX + (i + 1) * upcDx
+        
+        let y1 = defaultY - upc(x1)
+        let y2 = defaultY - upc(x2)
+
+        let coords1func = getPointCanvasCoords({ x: x1, y: y1 })
+        let coords2func = getPointCanvasCoords({ x: x2, y: y2 })
+        let coords1floor = getPointCanvasCoords({ x: x1, y: defaultY })
+        let coords2floor = getPointCanvasCoords({ x: x2, y: defaultY })
+
+        ctx.beginPath()
+        ctx.moveTo(coords1floor.x, coords1floor.y)
+        ctx.lineTo(coords1func.x, coords1func.y)
+        ctx.lineTo(coords2func.x, coords2func.y)
+        ctx.lineTo(coords2floor.x, coords2floor.y)
+        ctx.lineTo(coords1floor.x, coords1floor.y)
+        ctx.stroke()
+    }
+}
+
 drawConstruction = () =>
 {
-    ctx.fillStyle = "#ffffff"
-    ctx.strokeStyle = "#ffffff"
+    ctx.strokeStyle = constructionColor
 
     construction.nodes.forEach(node => drawNode(node))
 
     for (let i = 0; i < construction.rods.length; ++i)
     {
         drawRod(i)
+    }
+
+    if (upc != null)
+    {
+        ctx.strokeStyle = graphColor
+        drawUpc()
     }
 }
 
@@ -458,7 +500,7 @@ addRod = () =>
     let node = {}
 
     node.x = construction.nodes[position].x
-    node.y = 0
+    node.y = defaultY
     node.permit = 1
     node.force = 0
 
@@ -492,7 +534,7 @@ removeRod = () =>
     construction.nodes.splice(position, 1)
     construction.rods.splice(position, 1)
     
-    updateControls(construction)
+    updateControls()
     redraw()
 }
 
@@ -503,7 +545,7 @@ setForce = () =>
     
     construction.rods[position].force = force
     
-    updateControls(construction)
+    updateControls()
     redraw()
 }
 
@@ -514,7 +556,7 @@ setPermit = () =>
     
     construction.nodes[position].permit = permitValue
     
-    updateControls(construction)
+    updateControls()
     redraw()
 }
 
@@ -525,7 +567,7 @@ setNodeForce = () =>
     
     construction.nodes[position].force = force
     
-    updateControls(construction)
+    updateControls()
     redraw()
 }
 
@@ -683,7 +725,7 @@ deltaToU = (delta) =>
     let U = []
     for (let i = 0; i < construction.rods.length; ++i)
     {
-        U.push([delta[i], delta[i + 1]])
+        U.push([delta[i][0], delta[i + 1][0]])
     }
     return U
 }
@@ -693,7 +735,7 @@ lengthOf = (rodIndex) =>
     return construction.nodes[rodIndex + 1].x - construction.nodes[rodIndex].x
 }
 
-uToUp = (U) =>
+uToUpc = (U) =>
 {
     let up = []
     for (let i = 0; i < construction.rods.length; ++i)
@@ -736,5 +778,6 @@ process = () =>
     let ev = getEquationVariables(iv.K, iv.Q)
     let delta = solve(ev.A, ev.B)
     let U = deltaToU(delta)
-    console.log(delta)
+    upc = uToUpc(U)
+    redraw()
 }
