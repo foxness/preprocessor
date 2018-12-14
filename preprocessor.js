@@ -1,6 +1,5 @@
 // todo:
 // add clear button
-// make rod adding clean
 // improve visual style
 
 let defaultInput =
@@ -572,6 +571,7 @@ addRod = () =>
 
     let rod = {}
 
+    rod.force = 0
     rod.area = area
     rod.elastic = elastic
 
