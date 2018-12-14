@@ -1,6 +1,5 @@
 // todo:
 // add postprocessor
-// remove startNode, endNode
 // add clear button
 // make rod adding clean
 // improve visual style
@@ -15,8 +14,8 @@ let defaultInput =
 3 1 0
 5 0 1
 
-0 1 2 1 1
-1 2 3 0 1
+2 1 1
+3 0 1
 
 ` 
 
@@ -28,8 +27,8 @@ let defaultInput =
 // node2x node2xPermit node2force
 // ...
 
-// rod1startNode rod1endNode rod1area forceX1 elastic1
-// rod2startNode rod2endNode rod2area forceX2 elastic2
+// rod1area forceX1 elastic1
+// rod2area forceX2 elastic2
 // ...
 
 // ` 
@@ -65,6 +64,8 @@ let startDragX = null
 let startDragY = null
 let offsetDragX = 0
 let offsetDragY = 0
+
+let solve = math.lusolve
 
 $(document).ready(() =>
 {
@@ -195,9 +196,6 @@ parseConstruction = (raw) =>
     {
         let rod = {}
 
-        rod.startNode = parseInt(getNextNumber())
-        rod.endNode = parseInt(getNextNumber())
-
         rod.area = parseFloat(getNextNumber())
         rod.force = parseFloat(getNextNumber())
         rod.elastic = parseFloat(getNextNumber())
@@ -257,10 +255,11 @@ drawNodeForce = (node) =>
     drawArrow(coords.x, coords.y, 1, angle)
 }
 
-drawRod = (rod) =>
+drawRod = (rodIndex) =>
 {
-    let start = construction.nodes[rod.startNode]
-    let end = construction.nodes[rod.endNode]
+    let rod = construction.rods[rodIndex]
+    let start = construction.nodes[rodIndex]
+    let end = construction.nodes[rodIndex + 1]
 
     let vx = start.x - end.x
     let vy = start.y - end.y
@@ -299,7 +298,7 @@ drawRod = (rod) =>
     ctx.lineTo(canvasPoint0.x, canvasPoint0.y)
     ctx.stroke()
     
-    drawRodForce(rod)
+    drawRodForce(rodIndex)
 }
 
 drawArrow = (x, y, length, angle) =>
@@ -338,15 +337,17 @@ drawArrow = (x, y, length, angle) =>
     ctx.stroke()
 }
 
-drawRodForce = (rod) =>
+drawRodForce = (rodIndex) =>
 {
+    let rod = construction.rods[rodIndex]
+
     if (Math.abs(rod.force) < 0.001)
     {
         return
     }
     
-    let start = getPointCanvasCoords(construction.nodes[rod.startNode])
-    let end = getPointCanvasCoords(construction.nodes[rod.endNode])
+    let start = getPointCanvasCoords(construction.nodes[rodIndex])
+    let end = getPointCanvasCoords(construction.nodes[rodIndex + 1])
     
     let arrowDistSize = arrowDist * camera.zoom
     let arrowCount = Math.floor(Math.abs(start.x - end.x) / arrowDistSize)
@@ -377,7 +378,11 @@ drawConstruction = () =>
     ctx.strokeStyle = "#ffffff"
 
     construction.nodes.forEach(node => drawNode(node))
-    construction.rods.forEach(rod => drawRod(rod))
+
+    for (let i = 0; i < construction.rods.length; ++i)
+    {
+        drawRod(i)
+    }
 }
 
 clearCanvas = () =>
@@ -454,13 +459,10 @@ addRod = () =>
 
     node.x = construction.nodes[position].x
     node.y = 0
-
-    node.permit = 0
+    node.permit = 1
+    node.force = 0
 
     let rod = {}
-
-    rod.startNode = position
-    rod.endNode = position + 1
 
     rod.area = area
     rod.elastic = elastic
@@ -470,16 +472,10 @@ addRod = () =>
         construction.nodes[i].x += length
     }
 
-    for (let i = position; i < construction.rods.length; ++i)
-    {
-        construction.rods[i].startNode++
-        construction.rods[i].endNode++
-    }
-
     construction.nodes.splice(position, 0, node)
     construction.rods.splice(position, 0, rod)
 
-    updateControls(construction)
+    updateControls()
     redraw()
 }
 
@@ -492,12 +488,6 @@ removeRod = () =>
     for (let i = position + 1; i < construction.nodes.length; ++i)
     {
         construction.nodes[i].x -= length
-    }
-    
-    for (let i = position + 1; i < construction.rods.length; ++i)
-    {
-        construction.rods[i].startNode--
-        construction.rods[i].endNode--
     }
     
     construction.nodes.splice(position, 1)
@@ -693,6 +683,6 @@ process = () =>
 {
     let iv = getInitialVariables()
     let ev = getEquationVariables(iv.K, iv.Q)
-    let delta = math.lusolve(ev.A, ev.B)
+    let delta = solve(ev.A, ev.B)
     console.log(delta)
 }
