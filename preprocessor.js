@@ -1,21 +1,21 @@
 // todo:
-// add postprocessor
 // add clear button
 // make rod adding clean
 // improve visual style
-// restrict to 2 permits
 
 let defaultInput =
 `
 
 3 2
 
-0 0 0
-3 1 0
-5 0 1
+0 0
+3 0
+5 1
 
 2 1 1
 3 0 1
+
+0 1
 
 ` 
 
@@ -23,13 +23,15 @@ let defaultInput =
 
 // nodeCount rodCount
 
-// node1x node1xPermit node1force
-// node2x node2xPermit node2force
+// node1x node1force
+// node2x node2force
 // ...
 
 // rod1area forceX1 elastic1
 // rod2area forceX2 elastic2
 // ...
+
+// leftSupport rightSupport
 
 // ` 
 
@@ -194,8 +196,6 @@ parseConstruction = (raw) =>
 
         node.x = parseFloat(getNextNumber())
         node.y = defaultY
-
-        node.permit = parseInt(getNextNumber())
         node.force = parseFloat(getNextNumber())
 
         construction.nodes.push(node)
@@ -213,6 +213,9 @@ parseConstruction = (raw) =>
         construction.rods.push(rod)
     }
 
+    construction.leftSupport = parseInt(getNextNumber()) == 1
+    construction.rightSupport = parseInt(getNextNumber()) == 1
+
     return construction
 }
 
@@ -224,12 +227,12 @@ getPointCanvasCoords = (point) =>
     return { x: x, y: y }
 }
 
-drawNode = (node) =>
+drawSupports = () =>
 {
-    let coords = getPointCanvasCoords(node)
-    
-    if (node.permit == 0)
+    for (let s = 0; s <= construction.nodes.length; s += construction.nodes.length - 1)
     {
+        let coords = getPointCanvasCoords(construction.nodes[s])
+
         for (let i = 0; i < permitStrokeCount; ++i)
         {
             let start = {
@@ -248,7 +251,11 @@ drawNode = (node) =>
             ctx.stroke()
         }
     }
-    
+}
+
+drawNode = (node) =>
+{
+    let coords = getPointCanvasCoords(node)
     drawNodeForce(node)
 }
 
@@ -448,6 +455,8 @@ drawConstruction = () =>
     {
         drawRod(i)
     }
+
+    drawSupports()
 
     if (upc != null)
     {
@@ -710,17 +719,14 @@ getEquationVariables = (K, Q) =>
         A[i + 1][i] = K[i][1][0]
     }
 
-    let leftForbidden = construction.nodes[0].permit == 0
-    let rightForbidden = construction.nodes[construction.nodes.length - 1].permit == 0
-
-    if (leftForbidden)
+    if (construction.leftSupport)
     {
         A[0][0] = 1
         A[0][1] = 0
         A[1][0] = 0
     }
 
-    if (rightForbidden)
+    if (construction.rightSupport)
     {
         A[aSize - 1][aSize - 1] = 1
         A[aSize - 2][aSize - 1] = 0
@@ -739,12 +745,12 @@ getEquationVariables = (K, Q) =>
         B.push(q1 + q2 + f)
     }
 
-    if (leftForbidden)
+    if (construction.leftSupport)
     {
         B[0] = 0
     }
 
-    if (rightForbidden)
+    if (construction.rightSupport)
     {
         B[B.length - 1] = 0
     }
