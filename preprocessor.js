@@ -1,20 +1,3 @@
-// commit 1: added rod removing
-// commit 2: removed y z permits
-// commit 3: added force setting
-// commit 4: added arrow drawing
-// commit 5: added force drawing
-// commit 6: removed y force
-// commit 7: added permit setting & finished removing y force
-// commit 8: added permit drawing
-// commit 9: fixed negative force drawing
-// commit 10: added node force setting
-// commit 11: added node force drawing
-// commit 12: removed rod height
-// commit 13: improved arrow drawing
-// commit 14: added construction file saving
-// commit 15: added construction file opening
-// commit 16: improved drawing constants
-
 let defaultInput =
 `
 
@@ -24,8 +7,8 @@ let defaultInput =
 3 1 0
 5 0 1
 
-0 1 2 1
-1 2 3 0
+0 1 2 1 1
+1 2 3 0 1
 
 ` 
 
@@ -37,8 +20,8 @@ let defaultInput =
 // node2x node2xPermit node2force
 // ...
 
-// rod1startNode rod1endNode rod1width forceX1
-// rod2startNode rod2endNode rod2width forceX2
+// rod1startNode rod1endNode rod1width forceX1 elastic1
+// rod2startNode rod2endNode rod2width forceX2 elastic2
 // ...
 
 // ` 
@@ -211,8 +194,8 @@ parseConstruction = (raw) =>
         rod.endNode = parseInt(getNextNumber())
 
         rod.width = parseFloat(getNextNumber())
-        
         rod.force = parseFloat(getNextNumber())
+        rod.elastic = parseFloat(getNextNumber())
 
         construction.rods.push(rod)
     }
@@ -474,6 +457,7 @@ addRod = () =>
 {
     let length = parseFloat($("#rodLength").val())
     let width = parseFloat($("#rodWidth").val())
+    let elastic = parseFloat($("#rodElastic").val())
     let position = parseInt($('#rodPosition').find(":selected").val())
 
     let node = {}
@@ -489,6 +473,7 @@ addRod = () =>
     rod.endNode = position + 1
 
     rod.width = width
+    rod.elastic = elastic
 
     for (let i = position; i < construction.nodes.length; ++i)
     {
