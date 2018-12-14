@@ -1,3 +1,12 @@
+// todo:
+// add processor
+// add postprocessor
+// remove startNode, endNode
+// add clear button
+// make rod adding clean
+// improve visual style
+// restrict to 2 permits
+
 let defaultInput =
 `
 
