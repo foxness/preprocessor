@@ -17,6 +17,7 @@ input, select {
 
 .main {
     display: flex;
+    justify-content: center;
     margin: 30px;
 }
 
@@ -27,8 +28,7 @@ input, select {
 .controls {
     /* margin: 30px; */
     padding: 20px;
-    width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* border: 1px solid rgba(255, 255, 255, 0.3); */
 }
 
 input, select, button, body {
@@ -38,17 +38,14 @@ input, select, button, body {
     border: none;
 }
 
+select {
+    padding: 5px;
+    width: 90px;
+}
+
 input[type=number] {
     width: 90px;
-}
-
-input {
     padding: 5px;
-}
-
-select {
-    padding: 4px;
-    width: 90px;
 }
 
 button {
@@ -58,6 +55,10 @@ button {
 
 input, select, button {
     margin: 5px;
+}
+
+input[type=checkbox] {
+    width: auto;
 }
 
 .vgroup {
@@ -72,12 +73,12 @@ input, select, button {
 
 .controlGroup {
     display: flex;
-    padding: 10px 5px;
+    padding: 10px;
     margin: 3px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-#debugArea {
+/* #debugArea {
     width: 100%;
     height: 20%;
-}
+} */

@@ -55,9 +55,9 @@ let ctx = null
 let zoomMagnitude = 0.1
 
 let camera = {
-    x: -200,
-    y: -250,
-    zoom: 50
+    x: -250,
+    y: -300,
+    zoom: 60
 }
 
 let construction = null

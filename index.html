@@ -10,7 +10,7 @@
     </head>
     <body>
         <div class="main">
-            <canvas id="canvas" width="600" height="500"></canvas>
+            <canvas id="canvas" width="800" height="600"></canvas>
             <div class="controls">
                 <div class="controlGroup">
                     <div class="vgroup">
@@ -32,28 +32,36 @@
                     <button id="removeRod" onclick="removeRod();">Remove Rod</button>
                 </div>
 				<div class="controlGroup">
+                        <input id="forceX" type="number" placeholder="Force">
                     <select id="setForceRodPosition">
                         <option value="nothing">Nothing</option>
                     </select>
-					<input id="forceX" type="number" placeholder="Force">
                     <button id="Set Force" onclick="setForce();">Set Force</button>
                 </div>
 				<div class="controlGroup">
+                        <input id="forceNode" type="number" placeholder="Force">
                     <select id="setForceNodePosition">
                         <option value="nothing">Nothing</option>
                     </select>
-					<input id="forceNode" type="number" placeholder="Force">
                     <button id="setNodeForce" onclick="setNodeForce();">Set Node Force</button>
                 </div>
                 <div class="controlGroup">
-                    <input id="leftSupport" type="checkbox"> Left support<br>
-                    <input id="rightSupport" type="checkbox"> Right support<br>
+                    <div class="vgroup">
+                        <div>
+                            <input id="leftSupport" type="checkbox"> Left support
+                        </div>
+                        <div>
+                            <input id="rightSupport" type="checkbox"> Right support
+                        </div>
+                    </div>
                 </div>
+                <div class="controlGroup">
+                        <input id="open" type="file">
+                        <button id="save" onclick="save();">Save</button>
+                    </div>
                 <div class="controlGroup">
                     <textarea readonly id="debugArea"></textarea>
                     <button id="debug" onclick="debug();">Debug</button>
-                    <button id="save" onclick="save();">Save</button>
-                    <input id="open" type="file">
                     <button id="process" onclick="process();">Process</button>
                 </div>
             </div>
