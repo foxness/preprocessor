@@ -1,0 +1,1 @@
+{"nodes":[{"x":0,"y":0,"force":0},{"x":3,"y":0,"force":26},{"x":5,"y":0,"force":0}],"rods":[{"force":0,"area":2,"elastic":1},{"force":0,"area":3,"elastic":1}],"leftSupport":true,"rightSupport":true}
