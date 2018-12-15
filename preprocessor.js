@@ -1,6 +1,5 @@
 // todo:
 // add clear button
-// improve visual style
 
 let defaultInput =
 `
@@ -34,9 +33,13 @@ let defaultInput =
 
 // ` 
 
-let constructionColor = "#ffffff"
+let constructionColor = "#eee"
 let upcColor = "#ff00ff"
 let npcColor = "#00ff00"
+
+let renderConstruction = true;
+let renderNx = true;
+let renderUx = true;
 
 let constructionPercentage = 0.7
 let nodeSize = 5
@@ -102,6 +105,21 @@ $(document).ready(() =>
         construction.rightSupport = $('#rightSupport').prop('checked')
         outdated = true
         update()
+    })
+
+    $('#renderConstruction').change(() => {
+        renderConstruction = $('#renderConstruction').prop('checked')
+        redraw()
+    })
+
+    $('#renderNx').change(() => {
+        renderNx = $('#renderNx').prop('checked')
+        redraw()
+    })
+
+    $('#renderUx').change(() => {
+        renderUx = $('#renderUx').prop('checked')
+        redraw()
     })
 
     let offset = $("#canvas").offset()
@@ -278,7 +296,6 @@ drawSupports = () =>
 
 drawNode = (node) =>
 {
-    let coords = getPointCanvasCoords(node)
     drawNodeForce(node)
 }
 
@@ -472,22 +489,31 @@ drawConstruction = () =>
 {
     ctx.strokeStyle = constructionColor
 
-    construction.nodes.forEach(node => drawNode(node))
-
-    for (let i = 0; i < construction.rods.length; ++i)
+    if (renderConstruction)
     {
-        drawRod(i)
-    }
+        construction.nodes.forEach(node => drawNode(node))
 
-    drawSupports()
+        for (let i = 0; i < construction.rods.length; ++i)
+        {
+            drawRod(i)
+        }
+
+        drawSupports()
+    }
 
     if (!outdated)
     {
-        ctx.strokeStyle = upcColor
-        drawUpc()
+        if (renderUx)
+        {
+            ctx.strokeStyle = upcColor
+            drawUpc()
+        }
 
-        ctx.strokeStyle = npcColor
-        drawNpc()
+        if (renderNx)
+        {
+            ctx.strokeStyle = npcColor
+            drawNpc()
+        }
     }
 }
 

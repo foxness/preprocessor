@@ -56,9 +56,22 @@
                     </div>
                 </div>
                 <div class="controlGroup">
-                        <input id="open" type="file">
-                        <button id="save" onclick="save();">Save</button>
+                        <div class="vgroup">
+                            <div>
+                                <input id="renderConstruction" type="checkbox" checked> Render construction
+                            </div>
+                            <div>
+                                <input id="renderNx" type="checkbox" checked> Plot N(x)
+                            </div>
+                            <div>
+                                <input id="renderUx" type="checkbox" checked> Plot u(x)
+                            </div>
+                        </div>
                     </div>
+                <div class="controlGroup">
+                    <input id="open" type="file">
+                    <button id="save" onclick="save();">Save</button>
+                </div>
                 <div class="controlGroup">
                     <textarea readonly id="debugArea"></textarea>
                     <button id="debug" onclick="debug();">Debug</button>
