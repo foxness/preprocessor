@@ -750,7 +750,7 @@ getEquationVariables = (K, Q) =>
     {
         let q1i = i - 1
         let q2i = i
-        let q1 = q1i >= 0 && q1i < Q.length ? Q[q1i][1] : 0
+        let q1 = q1i >= 0 && q1i < Q.length ? Q[q1i][1] : 0 // ADD MINUS HERE
         let q2 = q2i >= 0 && q2i < Q.length ? Q[q2i][0] : 0
         // let f = (i == 0 && construction.leftSupport) || (i == bSize - 1 && construction.rightSupport) ? 0 : construction.nodes[i].force
         let f = construction.nodes[i].force
