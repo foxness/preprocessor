@@ -10,6 +10,11 @@ body {
     color: white;
 }
 
+input, select {
+    background: #333;
+    border: none;
+}
+
 .main {
     display: flex;
     margin: 30px;
@@ -20,9 +25,55 @@ body {
 }
 
 .controls {
-    margin: 30px;
+    /* margin: 30px; */
     padding: 20px;
     width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+input, select, button, body {
+    font-family: "Consolas";
+    font-size: 12pt;
+    color: #eee;
+    border: none;
+}
+
+input[type=number] {
+    width: 90px;
+}
+
+input {
+    padding: 5px;
+}
+
+select {
+    padding: 4px;
+    width: 90px;
+}
+
+button {
+    padding: 7px;
+    background: #111;
+}
+
+input, select, button {
+    margin: 5px;
+}
+
+.vgroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.hgroup {
+    display: flex;
+    align-items: center;
+}
+
+.controlGroup {
+    display: flex;
+    padding: 10px 5px;
+    margin: 3px;
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
