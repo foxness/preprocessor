@@ -35,8 +35,8 @@ let defaultInput =
 // ` 
 
 let constructionColor = "#ffffff"
-let upcColor = "#00ff00"
-let npcColor = "#ff00ff"
+let upcColor = "#ff00ff"
+let npcColor = "#00ff00"
 
 let constructionPercentage = 0.7
 let nodeSize = 5
@@ -750,9 +750,8 @@ getEquationVariables = (K, Q) =>
     {
         let q1i = i - 1
         let q2i = i
-        let q1 = q1i >= 0 && q1i < Q.length ? Q[q1i][1] : 0 // ADD MINUS HERE
-        let q2 = q2i >= 0 && q2i < Q.length ? Q[q2i][0] : 0
-        // let f = (i == 0 && construction.leftSupport) || (i == bSize - 1 && construction.rightSupport) ? 0 : construction.nodes[i].force
+        let q1 = q1i >= 0 && q1i < Q.length ? -Q[q1i][1] : 0
+        let q2 = q2i >= 0 && q2i < Q.length ? -Q[q2i][0] : 0
         let f = construction.nodes[i].force
         B.push(q1 + q2 + f)
     }
