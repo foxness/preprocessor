@@ -1,11 +1,8 @@
 // todo:
 // add clear button
-
-// commit 1: added sigma plotting
-// commit 2: added plot scaling
-// commit 3: added table
-// commit 4: added rod number to table
-// commit 5: added threshold
+// fix support drawing
+// change 'toggle' to 'show table'/'show construction with same width
+// improve rod force drawing (shift)
 
 let defaultInput =
 `
@@ -109,7 +106,7 @@ $(document).ready(() =>
     $("#canvas").mousemove((e) => { handleMouseMove(e) })
     $("#canvas").mouseup((e) => { handleMouseUp(e) })
     $("#canvas").mouseleave(() => { handleMouseLeave() })
-    $("#canvas").on('DOMMouseScroll mousewheel', (e) => { handleMouseWheel(e) })
+    $("#canvas").on('DOMMouseScroll mousewheel', (e) => { return handleMouseWheel(e) })
 
     $('#leftSupport').change(() => {
         construction.leftSupport = $('#leftSupport').prop('checked')
