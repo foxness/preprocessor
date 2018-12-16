@@ -4,6 +4,7 @@
 // commit 1: added sigma plotting
 // commit 2: added plot scaling
 // commit 3: added table
+// commit 4: added rod number to table
 
 let defaultInput =
 `
@@ -166,15 +167,29 @@ toggle = () =>
 			let startX = construction.nodes[0].x
 			let endX = construction.nodes[construction.nodes.length - 1].x
 			
-			$('#table').append(`<tr><th>x</th><th>U(x)</th><th>N(x)</th><th>sigma(x)</th></tr>`)
+			$('#table').append(`<tr><th>#</th><th>x</th><th>U(x)</th><th>N(x)</th><th>sigma(x)</th></tr>`)
 			for (let i = 0; startX + i * tableDx <= endX; ++i)
 			{
 				let x = (startX + i * tableDx).toFixed(decimalPlaces)
+				
+				let index
+				for (let j = 0; j < construction.rods.length; ++j)
+				{
+					let start = construction.nodes[j].x
+					let end = construction.nodes[j + 1].x
+
+					if (start <= x && x <= end)
+					{
+						index = j
+					}
+				}
+				index++
+				
 				let ux = upc(x).toFixed(decimalPlaces)
 				let nx = npc(x).toFixed(decimalPlaces)
 				let sigma = sigmac(x).toFixed(decimalPlaces)
 				
-				let rowHtml = `<tr><td>${x}</td><td>${ux}</td><td>${nx}</td><td>${sigma}</td></tr>`
+				let rowHtml = `<tr><td>${index}</td><td>${x}</td><td>${ux}</td><td>${nx}</td><td>${sigma}</td></tr>`
 				
 				$('#table').append(rowHtml)
 				$('#table').show()

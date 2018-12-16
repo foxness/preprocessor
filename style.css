@@ -21,6 +21,19 @@ input, select {
     border: none;
 }
 
+table, th, td {
+	border: 1px solid #777;
+	border-collapse: collapse;
+}
+
+table {
+	width: 100%;
+}
+
+th, td {
+	text-align: center;
+}
+
 .main {
     display: flex;
     justify-content: center;
