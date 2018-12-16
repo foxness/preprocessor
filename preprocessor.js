@@ -5,6 +5,7 @@
 // commit 2: added plot scaling
 // commit 3: added table
 // commit 4: added rod number to table
+// commit 5: added threshold
 
 let defaultInput =
 `
@@ -15,8 +16,8 @@ let defaultInput =
 3 0
 5 1
 
-2 1 1
-3 0 1
+2 1 1 1
+3 0 1 1
 
 0 1
 
@@ -30,8 +31,8 @@ let defaultInput =
 // node2x node2force
 // ...
 
-// rod1area forceX1 elastic1
-// rod2area forceX2 elastic2
+// rod1area forceX1 elastic1 threshold1
+// rod2area forceX2 elastic2 threshold2
 // ...
 
 // leftSupport rightSupport
@@ -43,7 +44,7 @@ let showTable = false
 let constructionColor = "#eee"
 let upcColor = "#ff00ff"
 let npcColor = "#00ff00"
-let sigmacColor = "yellow"
+let sigmacColor = "#ffff00"
 
 let renderConstruction = true;
 let renderNx = true;
@@ -167,7 +168,9 @@ toggle = () =>
 			let startX = construction.nodes[0].x
 			let endX = construction.nodes[construction.nodes.length - 1].x
 			
-			$('#table').append(`<tr><th>#</th><th>x</th><th>U(x)</th><th>N(x)</th><th>sigma(x)</th></tr>`)
+			let headHtml = `<tr><th>#</th><th>x</th><th>U(x)</th><th>N(x)</th><th>sigma(x)</th><th>In threshold</th></tr>`
+			
+			$('#table').append(headHtml)
 			for (let i = 0; startX + i * tableDx <= endX; ++i)
 			{
 				let x = (startX + i * tableDx).toFixed(decimalPlaces)
@@ -183,13 +186,15 @@ toggle = () =>
 						index = j
 					}
 				}
-				index++
+				
+				let threshold = construction.rods[index].threshold
 				
 				let ux = upc(x).toFixed(decimalPlaces)
 				let nx = npc(x).toFixed(decimalPlaces)
 				let sigma = sigmac(x).toFixed(decimalPlaces)
+				let inThreshold = Math.abs(sigma) < threshold ? "Yes" : "No"
 				
-				let rowHtml = `<tr><td>${index}</td><td>${x}</td><td>${ux}</td><td>${nx}</td><td>${sigma}</td></tr>`
+				let rowHtml = `<tr><td>${index + 1}</td><td>${x}</td><td>${ux}</td><td>${nx}</td><td>${sigma}</td><td>${inThreshold}</td></tr>`
 				
 				$('#table').append(rowHtml)
 				$('#table').show()
@@ -320,6 +325,7 @@ parseConstruction = (raw) =>
         rod.area = parseFloat(getNextNumber())
         rod.force = parseFloat(getNextNumber())
         rod.elastic = parseFloat(getNextNumber())
+		rod.threshold = parseFloat(getNextNumber())
 
         construction.rods.push(rod)
     }
@@ -703,6 +709,7 @@ addRod = () =>
     let length = parseFloat($("#rodLength").val())
     let area = parseFloat($("#rodArea").val())
     let elastic = parseFloat($("#rodElastic").val())
+	let threshold = parseFloat($("#threshold").val())
     let position = parseInt($('#rodPosition').find(":selected").val())
 
     let node = {}
@@ -716,6 +723,7 @@ addRod = () =>
     rod.force = 0
     rod.area = area
     rod.elastic = elastic
+	rod.threshold = threshold
 
     for (let i = position; i < construction.nodes.length; ++i)
     {

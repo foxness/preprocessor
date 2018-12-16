@@ -59,11 +59,11 @@ input, select, button, body {
 
 select {
     padding: 5px;
-    width: 90px;
+    width: 100px;
 }
 
 input[type=number] {
-    width: 90px;
+    width: 100px;
     padding: 5px;
 }
 
