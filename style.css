@@ -10,6 +10,12 @@ body {
     color: #eee;
 }
 
+#mainView {
+	display: flex;
+	justify-content: center;
+	width: 810px;
+}
+
 input, select {
     background: #333;
     border: none;

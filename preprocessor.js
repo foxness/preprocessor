@@ -3,6 +3,7 @@
 
 // commit 1: added sigma plotting
 // commit 2: added plot scaling
+// commit 3: added table
 
 let defaultInput =
 `
@@ -34,7 +35,9 @@ let defaultInput =
 
 // leftSupport rightSupport
 
-// ` 
+// `
+
+let showTable = false
 
 let constructionColor = "#eee"
 let upcColor = "#ff00ff"
@@ -82,6 +85,9 @@ let offsetDragY = 0
 
 let graphDx = 0.1
 let defaultY = 0
+
+let tableDx = 0.2
+let decimalPlaces = 2
 
 let outdated = true
 let upc = null
@@ -142,6 +148,42 @@ $(document).ready(() =>
     construction = parseConstruction(defaultInput.trim())
     update()
 })
+
+toggle = () =>
+{
+	if (upc != null)
+	{
+		if (showTable)
+		{
+			$('#canvas').show()
+			$('#table').hide()
+			$('#table').empty()
+		}
+		else
+		{
+			$('#canvas').hide()
+			
+			let startX = construction.nodes[0].x
+			let endX = construction.nodes[construction.nodes.length - 1].x
+			
+			$('#table').append(`<tr><th>x</th><th>U(x)</th><th>N(x)</th><th>sigma(x)</th></tr>`)
+			for (let i = 0; startX + i * tableDx <= endX; ++i)
+			{
+				let x = (startX + i * tableDx).toFixed(decimalPlaces)
+				let ux = upc(x).toFixed(decimalPlaces)
+				let nx = npc(x).toFixed(decimalPlaces)
+				let sigma = sigmac(x).toFixed(decimalPlaces)
+				
+				let rowHtml = `<tr><td>${x}</td><td>${ux}</td><td>${nx}</td><td>${sigma}</td></tr>`
+				
+				$('#table').append(rowHtml)
+				$('#table').show()
+			}
+		}
+		
+		showTable = !showTable
+	}
+}
 
 larger = () =>
 {

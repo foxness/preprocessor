@@ -10,7 +10,10 @@
     </head>
     <body>
         <div class="main">
-            <canvas id="canvas" width="800" height="600"></canvas>
+			<div id='mainView'>
+				<canvas id="canvas" width="800" height="600"></canvas>
+				<table id="table" style="display:none;"></table>
+			</div>
             <div class="controls">
                 <div class="controlGroup">
                     <div class="vgroup">
@@ -72,6 +75,7 @@
 					</div>
 				</div>
 				<div class="controlGroup">
+					<button id="toggle" onclick="toggle();">Toggle</button>
 				    <button id="larger" onclick="larger();">Larger</button>
                     <button id="smaller" onclick="smaller();">Smaller</button>
 				</div>
