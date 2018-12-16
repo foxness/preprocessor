@@ -1,6 +1,8 @@
 // todo:
 // add clear button
 
+// commit 1: added sigma plotting
+
 let defaultInput =
 `
 
@@ -36,10 +38,12 @@ let defaultInput =
 let constructionColor = "#eee"
 let upcColor = "#ff00ff"
 let npcColor = "#00ff00"
+let sigmacColor = "yellow"
 
 let renderConstruction = true;
 let renderNx = true;
 let renderUx = true;
+let renderSigma = true;
 
 let constructionPercentage = 0.7
 let nodeSize = 5
@@ -79,6 +83,7 @@ let defaultY = 0
 let outdated = true
 let upc = null
 let npc = null
+let sigmac = null
 
 let solve = math.lusolve
 
@@ -119,6 +124,11 @@ $(document).ready(() =>
 
     $('#renderUx').change(() => {
         renderUx = $('#renderUx').prop('checked')
+        redraw()
+    })
+	
+	$('#renderSigma').change(() => {
+        renderSigma = $('#renderSigma').prop('checked')
         redraw()
     })
 
@@ -485,6 +495,34 @@ drawNpc = () =>
     }
 }
 
+drawSigma = () =>
+{
+    let startX = construction.nodes[0].x
+    let endX = construction.nodes[construction.nodes.length - 1].x
+    
+    for (let i = 0; startX + i * graphDx < endX; ++i)
+    {
+        let x1 = startX + i * graphDx
+        let x2 = startX + (i + 1) * graphDx
+        
+        let y1 = defaultY - sigmac(x1)
+        let y2 = defaultY - sigmac(x2)
+
+        let coords1func = getPointCanvasCoords({ x: x1, y: y1 })
+        let coords2func = getPointCanvasCoords({ x: x2, y: y2 })
+        let coords1floor = getPointCanvasCoords({ x: x1, y: defaultY })
+        let coords2floor = getPointCanvasCoords({ x: x2, y: defaultY })
+
+        ctx.beginPath()
+        ctx.moveTo(coords1floor.x, coords1floor.y)
+        ctx.lineTo(coords1func.x, coords1func.y)
+        ctx.lineTo(coords2func.x, coords2func.y)
+        ctx.lineTo(coords2floor.x, coords2floor.y)
+        ctx.lineTo(coords1floor.x, coords1floor.y)
+        ctx.stroke()
+    }
+}
+
 drawConstruction = () =>
 {
     ctx.strokeStyle = constructionColor
@@ -513,6 +551,12 @@ drawConstruction = () =>
         {
             ctx.strokeStyle = npcColor
             drawNpc()
+        }
+		
+		if (renderSigma)
+        {
+            ctx.strokeStyle = sigmacColor
+            drawSigma()
         }
     }
 }
@@ -886,6 +930,43 @@ uToNpc = (U) =>
     return npc
 }
 
+uToSigmac = (U) =>
+{
+    let sp = []
+    for (let i = 0; i < construction.rods.length; ++i)
+    {
+        let rod = construction.rods[i]
+
+        let s = (x) =>
+        {
+            let a = (rod.elastic * rod.area / lengthOf(i)) * (U[i][1] - U[i][0])
+            let b = (rod.force * lengthOf(i) / 2) * (1 - 2 * x / lengthOf(i))
+			let c = rod.area
+            return (a + b) / c
+        }
+
+        sp.push(s)
+    }
+
+    let sigmac = (x) =>
+    {
+        for (let i = 0; i < construction.rods.length; ++i)
+        {
+            let start = construction.nodes[i].x
+            let end = construction.nodes[i + 1].x
+
+            if (start <= x && x <= end)
+            {
+                return sp[i](x - start)
+            }
+        }
+
+        return null
+    }
+
+    return sigmac
+}
+
 process = () =>
 {
     let iv = getInitialVariables()
@@ -895,6 +976,7 @@ process = () =>
 
     upc = uToUpc(U)
     npc = uToNpc(U)
+	sigmac = uToSigmac(U)
 
     outdated = false
     redraw()
