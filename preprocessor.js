@@ -2,6 +2,7 @@
 // add clear button
 
 // commit 1: added sigma plotting
+// commit 2: added plot scaling
 
 let defaultInput =
 `
@@ -44,6 +45,8 @@ let renderConstruction = true;
 let renderNx = true;
 let renderUx = true;
 let renderSigma = true;
+
+let plotScale = 1
 
 let constructionPercentage = 0.7
 let nodeSize = 5
@@ -139,6 +142,18 @@ $(document).ready(() =>
     construction = parseConstruction(defaultInput.trim())
     update()
 })
+
+larger = () =>
+{
+	plotScale *= 1 + zoomMagnitude
+	redraw()
+}
+
+smaller = () =>
+{
+	plotScale *= 1 - zoomMagnitude
+	redraw()
+}
 
 handleMouseWheel = (e) =>
 {
@@ -449,8 +464,8 @@ drawUpc = () =>
         let x1 = startX + i * graphDx
         let x2 = startX + (i + 1) * graphDx
         
-        let y1 = defaultY - upc(x1)
-        let y2 = defaultY - upc(x2)
+        let y1 = defaultY - upc(x1) * plotScale
+        let y2 = defaultY - upc(x2) * plotScale
 
         let coords1func = getPointCanvasCoords({ x: x1, y: y1 })
         let coords2func = getPointCanvasCoords({ x: x2, y: y2 })
@@ -477,8 +492,8 @@ drawNpc = () =>
         let x1 = startX + i * graphDx
         let x2 = startX + (i + 1) * graphDx
         
-        let y1 = defaultY - npc(x1)
-        let y2 = defaultY - npc(x2)
+        let y1 = defaultY - npc(x1) * plotScale
+        let y2 = defaultY - npc(x2) * plotScale
 
         let coords1func = getPointCanvasCoords({ x: x1, y: y1 })
         let coords2func = getPointCanvasCoords({ x: x2, y: y2 })
@@ -505,8 +520,8 @@ drawSigma = () =>
         let x1 = startX + i * graphDx
         let x2 = startX + (i + 1) * graphDx
         
-        let y1 = defaultY - sigmac(x1)
-        let y2 = defaultY - sigmac(x2)
+        let y1 = defaultY - sigmac(x1) * plotScale
+        let y2 = defaultY - sigmac(x2) * plotScale
 
         let coords1func = getPointCanvasCoords({ x: x1, y: y1 })
         let coords2func = getPointCanvasCoords({ x: x2, y: y2 })

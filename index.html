@@ -56,21 +56,25 @@
                     </div>
                 </div>
                 <div class="controlGroup">
-                        <div class="vgroup">
-                            <div>
-                                <input id="renderConstruction" type="checkbox" checked> Render construction
-                            </div>
-                            <div>
-                                <input id="renderNx" type="checkbox" checked> Plot N(x)
-                            </div>
-                            <div>
-                                <input id="renderUx" type="checkbox" checked> Plot u(x)
-                            </div>
-							<div>
-                                <input id="renderSigma" type="checkbox" checked> Plot sigma(x)
-                            </div>
+                    <div class="vgroup">
+                        <div>
+                            <input id="renderConstruction" type="checkbox" checked> Render construction
                         </div>
-                    </div>
+                        <div>
+                            <input id="renderNx" type="checkbox" checked> Plot N(x)
+                        </div>
+                        <div>
+                            <input id="renderUx" type="checkbox" checked> Plot u(x)
+                        </div>
+						<div>
+							<input id="renderSigma" type="checkbox" checked> Plot sigma(x)
+						</div>
+					</div>
+				</div>
+				<div class="controlGroup">
+				    <button id="larger" onclick="larger();">Larger</button>
+                    <button id="smaller" onclick="smaller();">Smaller</button>
+				</div>
                 <div class="controlGroup">
                     <input id="open" type="file">
                     <button id="save" onclick="save();">Save</button>
